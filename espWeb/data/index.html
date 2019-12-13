@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Управление гирляндой</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-ajax-unobtrusive@3.2.6/dist/jquery.unobtrusive-ajax.min.js" crossorigin="anonymous"></script>
+    <style>
+        .color {
+            height: 40px;
+            width: 40px;
+        }
+
+        .color-box {
+            margin-bottom: 1rem;
+            height: 50px;
+            width: 50px;
+            padding: 4px 4px 4px 4px;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: .25rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <i class="fas fa-tree" style="color: #fff; font-size: 2rem;top: 0.75rem;left: 0.75rem;"></i><span class="navbar-brand ml-1">Гирлянда</span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Выбор эффекта</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/comlog">COM log</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/palCreate.html">Добавление палитры</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-2">
+        <h5>Выбор эффекта</h5>
+        <form action="effset" method="post" data-ajax="true">
+            <div class="form-group">
+                <label for="b1"><i class="fas fa-holly-berry"></i> Эффект</label>
+                <select class="form-control" id="b1" name="b1">
+                    <option value="0">Run</option>
+                    <option value="1">PixieDust</option>
+                    <option value="2">Sparkr</option>
+                    <option value="3">RandCyc</option>
+                    <option value="4">Stars</option>
+                    <option value="5">Spread</option>
+                    <option value="6">Fly</option>
+                </select>
+            </div>
+            <i class="fas fa-palette"></i> Палитра
+            <ul class="nav nav-tabs mt-1" id="palTab">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#pal0">Rgb</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#pal1">Rainbow</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#pal2">RainbowStripe</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#pal3">Party</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#pal4">Heat</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#pal5">Fire</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#pal6">IceBlue</a>
+                </li>
+            </ul>
+            <div class="tab-content mt-2">
+                <div class="tab-pane fade show active" id="pal0">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #ff0000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #00ff00;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #0000ff;"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pal1">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #FF0000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #AB5500;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #ABAB00;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #00FF00;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #00AB55;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #0000FF;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #5500AB;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #AB0055;"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pal2">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #FF0000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #AB5500;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #ABAB00;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #00FF00;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #00AB55;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #0000FF;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #5500AB;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #AB0055;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pal3">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #5500AB;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #84007C;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #B5004B;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #E5001B;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #E81700;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #B84700;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #AB7700;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #ABAB00;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #AB5500;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #DD2200;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #F2000E;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #C2003E;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #8F0071;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #5F00A1;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #2F00D0;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #0007F9;"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pal4">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #700070;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #FF0000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #FFFF00;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #FFFFCC;"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pal5">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #220000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #880000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #FF0000;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #FF6600;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #FFCC00;"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pal6">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #ffffff;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #0000ff;"></div></div>
+                        </div>
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #00ffff;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="b2" id="b2" value="0" />
+            <input type="submit" class="btn btn-lg btn-info btn-block" value="Отправить" />
+        </form>
+        <script type="text/javascript">
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var palId = $(e.target).attr('href').substring(4);
+                $('#b2').val(palId);
+            })
+        </script>
+    </div>
+</body>
+</html>

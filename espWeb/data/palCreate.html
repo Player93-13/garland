@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Управление гирляндой</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-ajax-unobtrusive@3.2.6/dist/jquery.unobtrusive-ajax.min.js" crossorigin="anonymous"></script>
+    <script src="js/jscolor.js"></script>
+    <style>
+        .color {
+            height: 40px;
+            width: 40px;
+        }
+
+        .color-box {
+            margin-bottom: 1rem;
+            height: 50px;
+            width: 50px;
+            padding: 4px 4px 4px 4px;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: .25rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <i class="fas fa-tree" style="color: #fff; font-size: 2rem;top: 0.75rem;left: 0.75rem;"></i><span class="navbar-brand ml-1">Гирлянда</span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/index.html">Выбор эффекта</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/comlog">COM log</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/palCreate.html">Добавление палитры</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-2">
+        <h5>Добавление палитры</h5>
+        <form action="newpal" method="post" data-ajax="true">
+            <div class="form-group">
+                <input class="jscolor {onFineChange:'update(this)'} form-control" name="c" />
+            </div>
+            <input type="submit" class="btn btn-lg btn-block btn-info" value="set" />
+        </form>
+        <script type="text/javascript">
+            var wait = false;
+            var reqId = 0;
+            var delay = 50;
+            function update(jscolor) {
+                if (!wait) {
+                    wait = true;
+                    setTimeout(function () {
+                        send(jscolor);
+                    }, delay);
+                }
+            };
+            function send(s) {
+                $.ajax({
+                    url: 'runcolor',
+                    type: 'POST',
+                    data: { c: s.toString(), r: reqId++ },
+                    success: function () { wait = false; }
+                });
+            };
+        </script>
+    </div>
+</body>
+</html>
