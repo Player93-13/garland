@@ -12,13 +12,13 @@
 #define PALS 7 //number of palettes
 #define INTERVAL 10000 //change interval, msec
 
-#define BUTTON_NEXT_EFF
+//#define BUTTON_NEXT_EFF
 
 constexpr auto pinButtonNextEff = A0; // button pin for next effect
 constexpr bool buttonNextEffInverse = true; // options: inverse "button for next effect"
 
 //#define BTHS //whether to use hardware serial to communicate Bluetooth. Software serial is used otherwise
-//#define DEBUG //if defined, debug data is output to hardware serial port. REMEMBER TO REMOVE this definition once BTHS is set
+#define DEBUG //if defined, debug data is output to hardware serial port. REMEMBER TO REMOVE this definition once BTHS is set
 
 Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &PalHeat, &PalFire, &PalIceBlue};
 
@@ -27,8 +27,6 @@ Anim anim = Anim();
 #ifndef BTHS
 //11 and 12 are RX (from BT) and TX (to BT) pin numbers
 SoftwareSerial bt(11,12);
-#else
-#define bt Serial
 #endif
 
 byte command[COMMAND_LENGTH-1];   //BT command buffer
@@ -41,7 +39,7 @@ bool disableAutoChangeEffects = false;
 csTimerDef <1000> DetectTripleFastClickTimer;
 uint8_t DetectTripleFastClickCounter = 0;
 #else
-constexpr bool disableAutoChangeEffects = false;
+constexpr bool disableAutoChangeEffects = true;
 #endif // BUTTON_NEXT_EFF
 
 unsigned long ms = 10000;//startup animation duration, 10000 for "release" AnimStart
@@ -63,14 +61,14 @@ void setup() {
   Serial.print(F("RAM="));Serial.println(freeRam());
 #endif
   pixels.begin();
-  bt.begin(9600);
+  Serial3.begin(9600);
   randomSeed(analogRead(0)*analogRead(1));
   anim.setAnim(animInd);
   anim.setPeriod(20);
   anim.setPalette(pals[0]);
   anim.doSetUp();
 #ifndef BTHS
-  bt.listen();
+  //Serial3.listen();
 #endif
 
 #ifdef BUTTON_NEXT_EFF
@@ -99,19 +97,19 @@ void loop() {
 #endif // BUTTON_NEXT_EFF
 
 
-  if (bt.available()) {
+  if (Serial3.available()) {
     if (cmdPos == 0) { //wait for command marker when command buffer is empty, discard everything that doesn't match command marker
       byte b;
       do {
-        b = bt.read();
+        b = Serial3.read();
 #ifdef DEBUG
         Serial.print(b);Serial.write(32);
 #endif
-      } while (bt.available() && b != COMMAND_MARKER);
+      } while (Serial3.available() && b != COMMAND_MARKER);
       if (b == COMMAND_MARKER) cmdPos = 1;
     }
-    while (bt.available() && cmdPos < COMMAND_LENGTH) {
-       byte b = bt.read();
+    while (Serial3.available() && cmdPos < COMMAND_LENGTH) {
+       byte b = Serial3.read();
 #ifdef DEBUG
        Serial.print(b);Serial.write(32);
 #endif
@@ -125,7 +123,7 @@ void loop() {
 #ifdef DEBUG
       Serial.write('c');Serial.println(cs);
 #endif
-      commandComplete = (cs == command[COMMAND_LENGTH-2]);
+      commandComplete = true;
       cmdPos = 0;
     }
   }
@@ -135,7 +133,7 @@ void loop() {
       if ((command[1] < ANIMS) && (command[2] < PALS)) {
           anim.setAnim(command[1]);
           anim.setPalette(pals[command[2]]);
-          bt.write(command, 3);
+          Serial3.write(command, 3);
           ms = millis() + INTERVAL;
       }
     }
@@ -146,7 +144,7 @@ void loop() {
       anim.doSetUp();
       //todo: why 60000? (remove magik constant)
       ms = millis() + 60000;
-      bt.print('!');
+      Serial3.print('!');
     }
     commandComplete = false;
   }
@@ -206,12 +204,11 @@ void loop() {
         break;
       }
     }
-    bt.print(F(">"));bt.print(animInd);bt.print(F("\t"));bt.println(paletteInd);
+    Serial3.print(F(">"));Serial3.print(animInd);Serial3.print(F("\t"));Serial3.println(paletteInd);
 #ifndef BTHS
-    bt.listen();
+    //Serial3.listen();
 #endif
   }
 
 
 }
-
