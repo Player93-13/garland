@@ -4,6 +4,7 @@
 #include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
 #include <FS.h>   // Include the SPIFFS library
+#include "commands.h"
 
 ESP8266WiFiMulti wifiMulti;     // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
@@ -11,6 +12,7 @@ ESP8266WebServer server(80);    // Create a webserver object that listens for HT
 
 String getContentType(String filename); // convert the file extension to the MIME type
 bool handleFileRead(String path);       // send the right file to the client (if it exists)
+int rId = 0;
 
 void setup() {
   Serial.begin(115200);         // Start the Serial communication to send messages to the computer
@@ -46,12 +48,93 @@ void setup() {
       server.send(404, "text/plain", "404: Not Found"); // otherwise, respond with a 404 (Not Found) error
   });
 
+  server.on("/effset", HTTP_POST, handleSendCommand);
+  server.on("/runcolor", HTTP_POST, handleRunColor);
+
   server.begin();                           // Actually start the server
   Serial.println("HTTP server started");
 }
 
 void loop(void) {
   server.handleClient();
+}
+
+void handleSendCommand()
+{
+  if( ! server.hasArg("b1") || ! server.hasArg("b2")
+      || server.arg("b1") == NULL || server.arg("b2") == NULL) { // If the POST request doesn't have username and password data
+    server.send(400, "text/plain", "400: Invalid Request");         // The request is invalid, so send HTTP status 400
+    return;
+  }
+  byte vars[2] = { (byte)(server.arg("b1").toInt()), (byte)(server.arg("b2").toInt())};
+  
+  Serial.write(createCommand(CMD_SETAP, 2, vars), 5);
+  server.send(200, "text/html", "ok");
+}
+
+void handleRunColor()
+{
+  if( ! server.hasArg("c") || ! server.hasArg("r")
+      || server.arg("c") == NULL || server.arg("r") == NULL) { // If the POST request doesn't have username and password data
+    server.send(400, "text/plain", "400: Invalid Request");         // The request is invalid, so send HTTP status 400
+    return;
+  }
+  int r = server.arg("r").toInt();
+  if(r >= rId)
+  {
+    String s = server.arg("c");
+  char str[6];
+  for(int i = 0; i < 6; i++)
+  {
+    str[i] = s[i];
+  }
+  byte color[3];
+  hex2bin(str, color);
+  Serial.write(createCommand(CMD_RUNCOLOR, 3, color), 6);
+  server.send(200, "text/html", "ok");
+  }
+}
+
+byte* createCommand(char command, int arrLength, byte* arr)
+{
+  byte mass[arrLength + 3];
+  mass[0] = COMMAND_MARKER;
+  mass[1] = command;
+  for(int i = 0; i < arrLength; i++)
+  {
+    mass[i + 2] = arr[i];
+  }
+
+  byte checksum = 0; // could be an int if preferred
+  for(int i = 0; i < arrLength + 2; i++)
+  {
+    checksum += mass[i];
+  }
+
+  mass[arrLength + 2] = checksum;
+  return mass;
+}
+
+int char2int(char input)
+{
+  if(input >= '0' && input <= '9')
+    return input - '0';
+  if(input >= 'A' && input <= 'F')
+    return input - 'A' + 10;
+  if(input >= 'a' && input <= 'f')
+    return input - 'a' + 10;
+  return 0;
+}
+
+// This function assumes src to be a zero terminated sanitized string with
+// an even number of [0-9a-f] characters, and target to be sufficiently large
+void hex2bin(const char* src, byte* target)
+{
+  while(*src && src[1])
+  {
+    *(target++) = char2int(*src)*16 + char2int(src[1]);
+    src += 2;
+  }
 }
 
 String getContentType(String filename) { // convert the file extension to the MIME type
@@ -63,6 +146,7 @@ String getContentType(String filename) { // convert the file extension to the MI
 }
 
 bool handleFileRead(String path) { // send the right file to the client (if it exists)
+  rId = 0; //Сбрасываем счетчик команд на 0 (используется для быстрых ajax запросов)
   Serial.println("handleFileRead: " + path);
   if (path.endsWith("/")) path += "index.html";         // If a folder is requested, send the index file
   String contentType = getContentType(path);            // Get the MIME type

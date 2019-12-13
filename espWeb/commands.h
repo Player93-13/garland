@@ -1,4 +1,3 @@
-#define COMMAND_LENGTH 5 // total length of a command packet (in bytes)
 #define COMMAND_MARKER 255 //byte marking the command is going on
 #define CMD_SETAP '=' //set animation and palette
 #define CMD_RUNCOLOR 'C' //set animation and palette
