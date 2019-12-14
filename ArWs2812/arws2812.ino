@@ -13,9 +13,6 @@
 #define INTERVAL 10000 //change interval, msec
 
 
-constexpr auto pinButtonNextEff = A0; // button pin for next effect
-constexpr bool buttonNextEffInverse = true; // options: inverse "button for next effect"
-
 //#define BTHS //whether to use hardware serial to communicate Bluetooth. Software serial is used otherwise
 #define DEBUG //if defined, debug data is output to hardware serial port. REMEMBER TO REMOVE this definition once BTHS is set
 
@@ -28,9 +25,13 @@ Anim anim = Anim();
 SoftwareSerial bt(11,12);
 #endif
 
-byte command[COMMAND_LENGTH-1];   //BT command buffer
 bool commandComplete;  //flag indicating whether the command is complete or not
 byte cmdPos;  //position inside command buffer; 0 means buffer is empty; 1 means command marker received; 2...5 means command data received. Value of 5 means the command is fully received
+
+
+byte *command; //BT command buffer
+byte commandLength;
+
 
 constexpr bool disableAutoChangeEffects = true;
 
@@ -81,40 +82,71 @@ void loop() {
   }
   /**/
 
-  if (Serial3.available()) {
-    if (cmdPos == 0) { //wait for command marker when command buffer is empty, discard everything that doesn't match command marker
-      byte b;
-      do {
-        b = Serial3.read();
-#ifdef DEBUG
-        Serial.print(b);Serial.write(32);
-#endif
-      } while (Serial3.available() && b != COMMAND_MARKER);
-      if (b == COMMAND_MARKER) cmdPos = 1;
-    }
-    while (Serial3.available() && cmdPos < COMMAND_LENGTH) {
-       byte b = Serial3.read();
-#ifdef DEBUG
-       Serial.print(b);Serial.write(32);
-#endif
-       command[(cmdPos++)-1] = b;
-    }
-    if (cmdPos >= COMMAND_LENGTH) {
-      byte cs = 0;
-      for (byte i=0;i<(COMMAND_LENGTH-2);i++) {
-        cs = cs + command[i];
-      }
-#ifdef DEBUG
-      Serial.write('c');Serial.println(cs);
-#endif
-      commandComplete = true;
-      cmdPos = 0;
-    }
-  }
+  if (Serial3.available()) 
+    {
+        if (cmdPos == 0)
+        {
+            byte b;
 
-  if (anim.run()) {
-    if (commandComplete && command[0] == CMD_SETAP) {
-      if ((command[1] < ANIMS) && (command[2] < PALS)) {
+            do
+            {
+                b = Serial3.read();
+#ifdef DEBUG
+                Serial.print(b); Serial.write(32);
+#endif
+            } while (Serial3.available() && b != COMMAND_MARKER);
+
+            if (b == COMMAND_MARKER)
+                cmdPos = 1;
+        }
+
+        if (cmdPos == 1)
+        {
+            while (Serial3.available() && cmdPos < 2)
+            {
+                byte b = Serial3.read();
+#ifdef DEBUG
+                Serial.print(b); Serial.write(32);
+#endif
+                commandLength = b; //Считываем длину команды
+                cmdPos = 2;
+            }
+        }
+        
+        if (cmdPos > 1)
+        {
+            *command = new byte[commandLength];
+            while (Serial3.available() && cmdPos < commandLength + 2)
+            {
+                byte b = Serial3.read();
+#ifdef DEBUG
+                Serial.print(b); Serial.write(32);
+#endif
+                command[(cmdPos++) - 2] = b;
+            }
+
+            if (cmdPos >= commandLength + 2)
+            {
+                byte cs = 0;
+                for (byte i = 0; i < commandLength - 1; i++)
+                {
+                    cs += command[i];
+                }
+#ifdef DEBUG
+                Serial.write('c'); Serial.println(cs);
+#endif
+                commandComplete = (cs == command[commandLength - 1]);
+                cmdPos = 0;
+            }
+        }
+    }
+  
+  if (anim.run()) 
+  {
+    if (commandComplete && command[0] == CMD_SETAP) 
+    {
+      if ((command[1] < ANIMS) && (command[2] < PALS)) 
+      {
           anim.setAnim(command[1]);
           anim.setPalette(pals[command[2]]);
           Serial3.write(command, 3);
@@ -122,7 +154,8 @@ void loop() {
       }
     }
 
-    if (commandComplete && command[0] == CMD_MAGIC) {
+    if (commandComplete && command[0] == CMD_MAGIC) 
+    {
       animInd = 7; //todo: why 7? (remove magik constant)
       anim.setAnim(animInd);
       anim.doSetUp();
@@ -130,7 +163,9 @@ void loop() {
       ms = millis() + 60000;
       Serial3.print('!');
     }
+    
     commandComplete = false;
+    delete [] command;
   }
 
   // auto change effect
