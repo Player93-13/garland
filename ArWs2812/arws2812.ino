@@ -12,7 +12,6 @@
 #define PALS 7 //number of palettes
 #define INTERVAL 10000 //change interval, msec
 
-//#define BUTTON_NEXT_EFF
 
 constexpr auto pinButtonNextEff = A0; // button pin for next effect
 constexpr bool buttonNextEffInverse = true; // options: inverse "button for next effect"
@@ -33,14 +32,7 @@ byte command[COMMAND_LENGTH-1];   //BT command buffer
 bool commandComplete;  //flag indicating whether the command is complete or not
 byte cmdPos;  //position inside command buffer; 0 means buffer is empty; 1 means command marker received; 2...5 means command data received. Value of 5 means the command is fully received
 
-#ifdef BUTTON_NEXT_EFF
-csButtonLongClicksDef<1000, 50, buttonNextEffInverse> btnNextEff;
-bool disableAutoChangeEffects = false;
-csTimerDef <1000> DetectTripleFastClickTimer;
-uint8_t DetectTripleFastClickCounter = 0;
-#else
 constexpr bool disableAutoChangeEffects = true;
-#endif // BUTTON_NEXT_EFF
 
 unsigned long ms = 10000;//startup animation duration, 10000 for "release" AnimStart
 
@@ -57,11 +49,11 @@ extern Adafruit_NeoPixel pixels;
 
 void setup() {
 #ifdef DEBUG
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.print(F("RAM="));Serial.println(freeRam());
 #endif
   pixels.begin();
-  Serial3.begin(9600);
+  Serial3.begin(115200);
   randomSeed(analogRead(0)*analogRead(1));
   anim.setAnim(animInd);
   anim.setPeriod(20);
@@ -71,9 +63,6 @@ void setup() {
   //Serial3.listen();
 #endif
 
-#ifdef BUTTON_NEXT_EFF
-  pinMode(pinButtonNextEff, INPUT_PULLUP);
-#endif // BUTTON_NEXT_EFF
 }
 
 void loop() {
@@ -91,11 +80,6 @@ void loop() {
     Serial.print(F(" c="));Serial.println(c);
   }
   /**/
-
-#ifdef BUTTON_NEXT_EFF
-  btnNextEff.run(digitalRead(pinButtonNextEff));
-#endif // BUTTON_NEXT_EFF
-
 
   if (Serial3.available()) {
     if (cmdPos == 0) { //wait for command marker when command buffer is empty, discard everything that doesn't match command marker
@@ -148,37 +132,6 @@ void loop() {
     }
     commandComplete = false;
   }
-
-#ifdef BUTTON_NEXT_EFF
-  if (btnNextEff.flags.click) {
-    // random pallete
-    int prevPalInd = paletteInd;
-    while (prevPalInd == paletteInd) paletteInd = random(PALS);
-    // iterate animate
-    animInd++;
-    if (animInd >= ANIMS)
-      animInd = 0;
-    // apply
-    anim.setAnim(animInd);
-    anim.setPeriod(random(20, 40));
-    anim.setPalette(pals[paletteInd]);
-    anim.doSetUp();
-
-    disableAutoChangeEffects = true;
-    DetectTripleFastClickTimer.startOnce();
-    DetectTripleFastClickCounter++;
-  }
-
-  if (DetectTripleFastClickTimer.run()) {
-    if (DetectTripleFastClickCounter == 3) {
-      disableAutoChangeEffects = false;
-      //todo: add abstract the change mechanism
-      // force change effect
-      ms = millis();
-    }
-    DetectTripleFastClickCounter = 0;
-  }
-#endif // BUTTON_NEXT_EFF
 
   // auto change effect
   if ((millis() > ms) && ( ! disableAutoChangeEffects)) {
