@@ -97,21 +97,22 @@ void handleRunColor()
 
 byte* createCommand(char command, int arrLength, byte* arr)
 {
-  byte mass[arrLength + 3];
+  byte mass[arrLength + 4];
   mass[0] = COMMAND_MARKER;
-  mass[1] = command;
+  mass[1] = arrLength + 3;
+  mass[2] = command;
   for(int i = 0; i < arrLength; i++)
   {
-    mass[i + 2] = arr[i];
+    mass[i + 3] = arr[i];
   }
 
   byte checksum = 0; // could be an int if preferred
-  for(int i = 0; i < arrLength + 2; i++)
+  for(int i = 1; i < arrLength + 3; i++)
   {
     checksum += mass[i];
   }
 
-  mass[arrLength + 2] = checksum;
+  mass[arrLength + 3] = checksum;
   return mass;
 }
 

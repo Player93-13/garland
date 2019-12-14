@@ -154,6 +154,11 @@ void loop() {
       }
     }
 
+    if (commandComplete && command[0] == CMD_RUNCOLOR)
+    {
+      Serial3.print(CMD_RUNCOLOR);
+    }
+
     if (commandComplete && command[0] == CMD_MAGIC) 
     {
       animInd = 7; //todo: why 7? (remove magik constant)
