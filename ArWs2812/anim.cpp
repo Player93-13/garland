@@ -140,6 +140,11 @@ void Anim::setAnim(byte animInd)
             runImpl = &Anim::animBT_Run;
             setUpOnPalChange = false;
         break;
+        case 8: //special
+            setUpImpl = &Anim::animRunColor_SetUp;
+            runImpl = &Anim::animRunColor_Run;
+            setUpOnPalChange = false;
+        break;
         default:
             setUpImpl = &Anim::animStart_SetUp;
             runImpl = &Anim::animStart_Run;

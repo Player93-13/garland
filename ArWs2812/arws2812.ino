@@ -2,6 +2,7 @@
 #define _SS_MAX_RX_BUFF 8 //lower SoftwareSerial's receive buffer to conserve some RAM
 #include <SoftwareSerial.h>
 
+#include "color.h"
 #include "palette.h"
 #include "anim.h"
 #include "commands.h"
@@ -22,7 +23,7 @@ Anim anim = Anim();
 
 #ifndef BTHS
 //11 and 12 are RX (from BT) and TX (to BT) pin numbers
-SoftwareSerial bt(11,12);
+SoftwareSerial bt(11, 12);
 #endif
 
 bool commandComplete;  //flag indicating whether the command is complete or not
@@ -34,6 +35,7 @@ byte commandLength;
 
 
 constexpr bool disableAutoChangeEffects = true;
+bool runColor = false;
 
 unsigned long ms = 10000;//startup animation duration, 10000 for "release" AnimStart
 
@@ -50,11 +52,11 @@ extern Adafruit_NeoPixel pixels;
 
 void setup() {
 #ifdef DEBUG
-  Serial.begin(115200);
-  Serial.print(F("RAM="));Serial.println(freeRam());
+  Serial.begin(9600);
+  Serial.print(F("RAM=")); Serial.println(freeRam());
 #endif
   pixels.begin();
-  Serial3.begin(115200);
+  Serial3.begin(9600);
   randomSeed(analogRead(0)*analogRead(1));
   anim.setAnim(animInd);
   anim.setPeriod(20);
@@ -68,7 +70,7 @@ void setup() {
 
 void loop() {
   /* this piece of code checks for looping while trying to find different colors
-  for (int pi=0;pi<PALS;pi++) {
+    for (int pi=0;pi<PALS;pi++) {
     int c = 0;
 
     Serial.print(F("pi="));Serial.print(pi);
@@ -79,100 +81,121 @@ void loop() {
       c2 = pals[pi]->getPalColor((float)rngb()/256);
     }
     Serial.print(F(" c="));Serial.println(c);
-  }
-  /**/
-
-  if (Serial3.available()) 
-    {
-        if (cmdPos == 0)
-        {
-            byte b;
-
-            do
-            {
-                b = Serial3.read();
-#ifdef DEBUG
-                Serial.print(b); Serial.write(32);
-#endif
-            } while (Serial3.available() && b != COMMAND_MARKER);
-
-            if (b == COMMAND_MARKER)
-                cmdPos = 1;
-        }
-
-        if (cmdPos == 1)
-        {
-            while (Serial3.available() && cmdPos < 2)
-            {
-                byte b = Serial3.read();
-#ifdef DEBUG
-                Serial.print(b); Serial.write(32);
-#endif
-                commandLength = b; //Считываем длину команды
-                cmdPos = 2;
-            }
-        }
-        
-        if (cmdPos > 1)
-        {
-            *command = new byte[commandLength];
-            while (Serial3.available() && cmdPos < commandLength + 2)
-            {
-                byte b = Serial3.read();
-#ifdef DEBUG
-                Serial.print(b); Serial.write(32);
-#endif
-                command[(cmdPos++) - 2] = b;
-            }
-
-            if (cmdPos >= commandLength + 2)
-            {
-                byte cs = 0;
-                for (byte i = 0; i < commandLength - 1; i++)
-                {
-                    cs += command[i];
-                }
-#ifdef DEBUG
-                Serial.write('c'); Serial.println(cs);
-#endif
-                commandComplete = (cs == command[commandLength - 1]);
-                cmdPos = 0;
-            }
-        }
     }
-  
-  if (anim.run()) 
+    /**/
+
+  if (Serial3.available())
   {
-    if (commandComplete && command[0] == CMD_SETAP) 
+    if (cmdPos == 0)
     {
-      if ((command[1] < ANIMS) && (command[2] < PALS)) 
+      byte b;
+
+      do
       {
+        b = Serial3.read();
+#ifdef DEBUG
+        Serial.print(b); Serial.write(32);
+#endif
+      } while (Serial3.available() && b != COMMAND_MARKER);
+
+      if (b == COMMAND_MARKER)
+        cmdPos = 1;
+    }
+
+    if (cmdPos == 1)
+    {
+      while (Serial3.available() && cmdPos < 2)
+      {
+        byte b = Serial3.read();
+#ifdef DEBUG
+        Serial.print(b); Serial.write(32);
+#endif
+        commandLength = b; //Считываем длину команды
+        cmdPos = 2;
+      }
+    }
+
+    if (cmdPos > 1)
+    {
+      delete [] command;
+      command = new byte[commandLength - 1];
+      while (Serial3.available() && cmdPos < commandLength + 2)
+      {
+        byte b = Serial3.read();
+#ifdef DEBUG
+        Serial.print(b); Serial.write(32);
+#endif
+        command[(cmdPos++) - 2] = b;
+      }
+
+      if (cmdPos >= commandLength + 1)
+      {
+        Serial.print("Command length "); Serial.println(commandLength);
+        byte cs = commandLength;
+        for (byte i = 0; i < commandLength - 2; i++)
+        {
+          cs += command[i];
+          Serial.write('q'); Serial.print(command[i]); Serial.write(32);
+        }
+#ifdef DEBUG
+        Serial.write('c'); Serial.println(cs);
+#endif
+        commandComplete = (cs == command[commandLength - 2]);
+        cmdPos = 0;
+      }
+    }
+  }
+
+  if (runColor && command[0] == CMD_RUNCOLOR)
+  {
+    if (commandComplete)
+    {
+      for (int i = 0; i < LEDS; i++)
+      {
+        pixels.setPixelColor(i, pixels.Color(command[1], command[2], command[3]));
+        pixels.show();
+      }
+    }
+  }
+  else
+  {
+    runColor = false;
+    if (anim.run())
+    {
+      if (commandComplete && command[0] == CMD_SETAP)
+      {
+        if ((command[1] < ANIMS) && (command[2] < PALS))
+        {
           anim.setAnim(command[1]);
           anim.setPalette(pals[command[2]]);
           Serial3.write(command, 3);
           ms = millis() + INTERVAL;
+        }
       }
-    }
 
-    if (commandComplete && command[0] == CMD_RUNCOLOR)
-    {
-      Serial3.print(CMD_RUNCOLOR);
-    }
+      if (commandComplete && command[0] == CMD_RUNCOLOR)
+      {
+        for (int i = 0; i < LEDS; i++)
+        {
+          pixels.setPixelColor(i, pixels.Color(command[1], command[2], command[3]));
+          pixels.show();
+        }
+        runColor = true;
+      }
 
-    if (commandComplete && command[0] == CMD_MAGIC) 
-    {
-      animInd = 7; //todo: why 7? (remove magik constant)
-      anim.setAnim(animInd);
-      anim.doSetUp();
-      //todo: why 60000? (remove magik constant)
-      ms = millis() + 60000;
-      Serial3.print('!');
+      if (commandComplete && command[0] == CMD_MAGIC)
+      {
+        animInd = 7; //todo: why 7? (remove magik constant)
+        anim.setAnim(animInd);
+        anim.doSetUp();
+        //todo: why 60000? (remove magik constant)
+        ms = millis() + 60000;
+        Serial3.print('!');
+      }
+
+      commandComplete = false;
     }
-    
-    commandComplete = false;
-    delete [] command;
   }
-
   // auto change effect
   if ((millis() > ms) && ( ! disableAutoChangeEffects)) {
     //TODO: rollover bug. after 49 days uptime this code will be broken
@@ -180,24 +203,24 @@ void loop() {
     ms = millis() + INTERVAL;
     switch ( (animInd < 0) ? 0 : random(2)) {
       case 0:
-      {
-        int prevAnimInd = animInd;
-        while (prevAnimInd == animInd) animInd = random(ANIMS);
-        anim.setAnim(animInd);
-        anim.setPeriod(random(20, 40));
-        anim.setPalette(pals[paletteInd]);
-        anim.doSetUp();
-        break;
-      }
+        {
+          int prevAnimInd = animInd;
+          while (prevAnimInd == animInd) animInd = random(ANIMS);
+          anim.setAnim(animInd);
+          anim.setPeriod(random(20, 40));
+          anim.setPalette(pals[paletteInd]);
+          anim.doSetUp();
+          break;
+        }
       case 1:
-      {
-        int prevPalInd = paletteInd;
-        while (prevPalInd == paletteInd) paletteInd = random(PALS);
-        anim.setPalette(pals[paletteInd]);
-        break;
-      }
+        {
+          int prevPalInd = paletteInd;
+          while (prevPalInd == paletteInd) paletteInd = random(PALS);
+          anim.setPalette(pals[paletteInd]);
+          break;
+        }
     }
-    Serial3.print(F(">"));Serial3.print(animInd);Serial3.print(F("\t"));Serial3.println(paletteInd);
+    Serial3.print(F(">")); Serial3.print(animInd); Serial3.print(F("\t")); Serial3.println(paletteInd);
 #ifndef BTHS
     //Serial3.listen();
 #endif

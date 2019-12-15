@@ -107,6 +107,9 @@ private:
     void animBT_SetUp();
     void animBT_Run();
 
+    void animRunColor_SetUp();
+    void animRunColor_Run();
+
 public:
 
 

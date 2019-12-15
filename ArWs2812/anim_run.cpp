@@ -2,7 +2,6 @@
 #include "color.h"
 #include "palette.h"
 
-
 void Anim::animRun_SetUp() {
     pos = 0;
     inc = 1 + (rngb() >> 5);
