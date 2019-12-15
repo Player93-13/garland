@@ -53,30 +53,45 @@
         <h5>Добавление палитры</h5>
         <form action="newpal" method="post" data-ajax="true">
             <div class="form-group">
-                <input class="jscolor {onFineChange:'update(this)'} form-control" name="c" />
+                <input class="jscolor {onFineChange:'update(this)', width:243, height:150, borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666' } form-control" name="c" />
             </div>
             <input type="submit" class="btn btn-lg btn-block btn-info" value="set" />
         </form>
         <script type="text/javascript">
             var wait = false;
-            var reqId = 0;
-            var delay = 50;
+            var delay = 25;
+            var color;
             function update(jscolor) {
+                color = jscolor.toString();
                 if (!wait) {
                     wait = true;
                     setTimeout(function () {
-                        send(jscolor);
+                        send();
                     }, delay);
                 }
             };
-            function send(s) {
-                $.ajax({
-                    url: 'runcolor',
-                    type: 'POST',
-                    data: { c: s.toString(), r: reqId++ },
-                    success: function () { wait = false; }
-                });
+            
+
+            var Socket;
+            function init() {
+                Socket = new WebSocket('ws://' + window.location.hostname + ':81/');
+            }
+
+            function send() {
+                //$.ajax({
+                //    url: 'runcolor',
+                //    type: 'POST',
+                //    data: { color },
+                //    success: function () { wait = false; }
+                //});
+
+                Socket.send("C" + color);
+				wait = false;
             };
+
+            window.onload = function (e) {
+                init();
+            }
         </script>
     </div>
 </body>

@@ -15,7 +15,7 @@
 
 
 //#define BTHS //whether to use hardware serial to communicate Bluetooth. Software serial is used otherwise
-#define DEBUG //if defined, debug data is output to hardware serial port. REMEMBER TO REMOVE this definition once BTHS is set
+//#define DEBUG //if defined, debug data is output to hardware serial port. REMEMBER TO REMOVE this definition once BTHS is set
 
 Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &PalHeat, &PalFire, &PalIceBlue};
 
@@ -30,7 +30,7 @@ bool commandComplete;  //flag indicating whether the command is complete or not
 byte cmdPos;  //position inside command buffer; 0 means buffer is empty; 1 means command marker received; 2...5 means command data received. Value of 5 means the command is fully received
 
 
-byte *command; //BT command buffer
+byte command[255]; //BT command buffer
 byte commandLength;
 
 
@@ -52,11 +52,11 @@ extern Adafruit_NeoPixel pixels;
 
 void setup() {
 #ifdef DEBUG
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.print(F("RAM=")); Serial.println(freeRam());
 #endif
   pixels.begin();
-  Serial3.begin(9600);
+  Serial3.begin(115200);
   randomSeed(analogRead(0)*analogRead(1));
   anim.setAnim(animInd);
   anim.setPeriod(20);
@@ -117,10 +117,21 @@ void loop() {
 
     if (cmdPos > 1)
     {
-      delete [] command;
-      command = new byte[commandLength - 1];
       while (Serial3.available() && cmdPos < commandLength + 2)
       {
+        if (cmdPos == 2)
+        {
+          byte bcmd = Serial3.peek();
+          if (bcmd != CMD_RUNCOLOR && bcmd != CMD_SETAP) // Заведомо ложная команда, прекращаем считывание
+          {
+            cmdPos = 0;
+            commandComplete = false;
+#ifdef DEBUG
+            Serial.print(bcmd); Serial.print(">exit"); Serial.write(32);
+#endif
+            break;
+          }
+        }
         byte b = Serial3.read();
 #ifdef DEBUG
         Serial.print(b); Serial.write(32);
@@ -150,11 +161,15 @@ void loop() {
   {
     if (commandComplete)
     {
+      byte r = (int)pgm_read_byte_near(BRI + command[1]);
+      byte g = (int)pgm_read_byte_near(BRI + command[2]);
+      byte b = (int)pgm_read_byte_near(BRI + command[3]);
       for (int i = 0; i < LEDS; i++)
       {
-        pixels.setPixelColor(i, pixels.Color(command[1], command[2], command[3]));
-        pixels.show();
+        pixels.setPixelColor(i, pixels.Color(r, g, b));
       }
+      pixels.show();
+      commandComplete = false;
     }
   }
   else

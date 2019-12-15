@@ -3,6 +3,7 @@
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
 #include <FS.h>   // Include the SPIFFS library
 #include "commands.h"
 
@@ -11,6 +12,8 @@
 ESP8266WiFiMulti wifiMulti;     // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
 ESP8266WebServer server(80);    // Create a webserver object that listens for HTTP request on port 80
+
+WebSocketsServer webSocket = WebSocketsServer(81);
 
 String getContentType(String filename); // convert the file extension to the MIME type
 bool handleFileRead(String path);       // send the right file to the client (if it exists)
@@ -66,10 +69,67 @@ void setup() {
 #ifdef DEBUG
   Serial.println("HTTP server started");
 #endif
+
+  webSocket.begin();
+  webSocket.onEvent(webSocketEvent);
+#ifdef DEBUG
+  Serial.println("webSocket server started");
+#endif
+
 }
 
 void loop(void) {
   server.handleClient();
+  webSocket.loop();
+}
+
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+
+  switch (type) {
+    case WStype_DISCONNECTED:
+#ifdef DEBUG
+      Serial.printf("[%u] Disconnected!\n", num);
+#endif
+      break;
+    case WStype_CONNECTED:
+      {
+        IPAddress ip = webSocket.remoteIP(num);
+#ifdef DEBUG
+        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+#endif
+        // send message to client
+        webSocket.sendTXT(num, "Connected");
+      }
+      break;
+    case WStype_TEXT:
+#ifdef DEBUG
+      Serial.printf("[%u] get Text: %s\n", num, payload);
+#endif
+      char str[6];
+      for (int i = 0; i < 6; i++)
+      {
+        str[i] = payload[i + 1];
+      }
+      byte color[3];
+      hex2bin(str, color);
+
+      sendCommand(CMD_RUNCOLOR, 3, color);
+      // send message to client
+      // webSocket.sendTXT(num, "message here");
+
+      // send data to all connected clients
+      // webSocket.broadcastTXT("message here");
+      break;
+    case WStype_BIN:
+#ifdef DEBUG
+      Serial.printf("[%u] get binary length: %u\n", num, length);
+#endif
+      hexdump(payload, length);
+
+      // send message to client
+      // webSocket.sendBIN(num, payload, length);
+      break;
+  }
 }
 
 void handleSendCommand()
@@ -103,7 +163,7 @@ void handleRunColor()
     }
     byte color[3];
     hex2bin(str, color);
-    
+
     sendCommand(CMD_RUNCOLOR, 3, color);
     server.send(200, "text/html", "ok");
   }
