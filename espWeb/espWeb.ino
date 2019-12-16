@@ -7,7 +7,7 @@
 #include <FS.h>   // Include the SPIFFS library
 #include "commands.h"
 
-#define DEBUG
+//#define DEBUG
 
 ESP8266WiFiMulti wifiMulti;     // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
@@ -64,6 +64,7 @@ void setup() {
 
   server.on("/effset", HTTP_POST, handleSendCommand);
   server.on("/runcolor", HTTP_POST, handleRunColor);
+  server.on("/newpal", HTTP_POST, handleNewPal);
 
   server.begin();                           // Actually start the server
 #ifdef DEBUG
@@ -143,6 +144,12 @@ void handleSendCommand()
 
   sendCommand(CMD_SETAP, 2, vars);
   server.send(200, "text/html", "ok");
+}
+
+void handleNewPal()
+{
+  server.sendHeader("Location", String("/"), true);
+  server.send(302, "text/plain", "");
 }
 
 void handleRunColor()
@@ -247,6 +254,14 @@ bool handleFileRead(String path) { // send the right file to the client (if it e
   String contentType = getContentType(path);            // Get the MIME type
   if (SPIFFS.exists(path)) {                            // If the file exists
     File file = SPIFFS.open(path, "r");                 // Open it
+    if (path.endsWith(".html"))
+    {
+      server.sendHeader("Cache-Control", "public, max-age=3600‬");
+    }
+    else
+    {
+      server.sendHeader("Cache-Control", "public, only-if-cached, max-age=2678400‬");
+    }
     size_t sent = server.streamFile(file, contentType); // And send it to the client
     file.close();                                       // Then close the file again
     return true;
