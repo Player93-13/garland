@@ -7,7 +7,7 @@
 #include <FS.h>   // Include the SPIFFS library
 #include "commands.h"
 
-//#define DEBUG
+#define DEBUG
 
 ESP8266WiFiMulti wifiMulti;     // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
@@ -24,7 +24,7 @@ void setup() {
   delay(10);
 
   wifiMulti.addAP("Keenetic-4431", "123asdqwe");   // add Wi-Fi networks you want to connect to
-  wifiMulti.addAP("ssid_from_AP_2", "your_password_for_AP_2");
+  wifiMulti.addAP("Keenetic-4013", "cnitapple");
   wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3");
 
 #ifdef DEBUG

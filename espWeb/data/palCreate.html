@@ -60,7 +60,8 @@
         <script type="text/javascript">
             var wait = false;
             var delay = 25;
-            var color;
+            var color = "";;
+
             function update(jscolor) {
                 color = jscolor.toString();
                 if (!wait) {
@@ -71,20 +72,12 @@
                 }
             };
             
-
             var Socket;
             function init() {
                 Socket = new WebSocket('ws://' + window.location.hostname + ':81/');
             }
 
             function send() {
-                //$.ajax({
-                //    url: 'runcolor',
-                //    type: 'POST',
-                //    data: { color },
-                //    success: function () { wait = false; }
-                //});
-
                 Socket.send("C" + color);
 				wait = false;
             };
