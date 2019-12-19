@@ -66,7 +66,8 @@ void setup() {
   });
 
   server.on("/effset", HTTP_POST, handleSendCommand);
-  server.on("/newpal", HTTP_POST, handleNewPal);
+  server.on("/newpal", HTTP_POST, handleNewPal); // Создание новой палитры
+  server.on("/delpal", HTTP_POST, handleDelPal); // Удаление custom - палитры
 
   server.begin();                           // Actually start the server
 #ifdef DEBUG
@@ -117,11 +118,6 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       hex2bin(str, color);
 
       sendCommand(CMD_RUNCOLOR, 3, color);
-      // send message to client
-      // webSocket.sendTXT(num, "message here");
-
-      // send data to all connected clients
-      // webSocket.broadcastTXT("message here");
       break;
     case WStype_BIN:
 #ifdef DEBUG
@@ -158,49 +154,35 @@ void handleNewPal()
   }
   String palname = server.arg("palname");
   String sc = server.arg("sc");
+  long id = random(10000000);
 #ifdef DEBUG
   Serial.print("http post [newpal] palname:");
   Serial.print(palname);
   Serial.print(", sc:");
   Serial.println(sc);
 #endif
-  String JSONpal = "";
-  JSONpal += "{\"id\":" + String(random(10000000)) + ",";
-  JSONpal += "\"name\":\"" + palname + "\",";
-  JSONpal += "\"colors\":[\"";
-  for (byte i = 0; i < sc.length(); i++)
-  {
-    if (i > 0 && (i % 6 == 0))
-    {
-      JSONpal += ",\"";
-    }
-    JSONpal += sc[i];
-    if (i % 6 == 5)
-    {
-      JSONpal += "\"";
-    }
-  }
-  JSONpal += "]}";
 
-  File f = SPIFFS.open("/" + JSONpalFile, "a");
-  if (f.size() < 0)
-  {
-    f.println("[");
-    f.println(JSONpal);
-    f.print("]");
-  }
-  else
-  {
+  addNePalToFile(id, palname, sc);
 
+  server.sendHeader("Location", String("/"), true);
+  server.send(302, "text/plain", "");
+}
+
+void handleDelPal()
+{
+  if ( ! server.hasArg("id") || server.arg("id") == NULL)
+  {
+    server.send(400, "text/plain", "400: Invalid Request");
+    return;
   }
-  if (f.size() > 1)
-    f.print(",");
-  f.println(JSONpal);
-  f.close();
+  int id = server.arg("id").toInt();
 #ifdef DEBUG
-  Serial.println("Added to " + JSONpalFile);
-  Serial.println(JSONpal);
+  Serial.print("http post [delpal] id:");
+  Serial.println(id);
 #endif
+
+  deletePal(id);
+
   server.sendHeader("Location", String("/"), true);
   server.send(302, "text/plain", "");
 }
@@ -209,7 +191,7 @@ void addNePalToFile(long id, String palName, String colors)
 {
   File _f = SPIFFS.open(JSONpalFile, "r");
 
-  DynamicJsonDocument _doc(_f.size() + 300);
+  DynamicJsonDocument _doc(_f.size() * 4 + 5000);
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
@@ -218,18 +200,63 @@ void addNePalToFile(long id, String palName, String colors)
     return;
   }
 #endif
-  
-  StaticJsonDocument<300> _newP;
+
+  StaticJsonDocument<1200> _newP;
   _newP["id"] = id;
   _newP["name"] = palName;
   JsonArray _colrs = _newP.createNestedArray("colors");
-  for(int i = 0; i < colors.length(); i +=6)
+  for (int i = 0; i < colors.length(); i += 6)
   {
-    _colrs.add(colors.substring(i, i+6));
+    _colrs.add(colors.substring(i, i + 6));
   }
 
   _doc.add(_newP);
-  serializeJsonPretty(_doc, Serial);
+
+  _f.close();
+
+  File _fw = SPIFFS.open(JSONpalFile, "w");
+  serializeJson(_doc, _fw);
+  _fw.close();
+#ifdef DEBUG
+  Serial.print(JSONpalFile);
+  Serial.println(" updated.");
+#endif
+}
+
+void deletePal(int id)
+{
+  File _f = SPIFFS.open(JSONpalFile, "r");
+
+  DynamicJsonDocument _doc(_f.size() * 4 + 5000);
+  DeserializationError _error = deserializeJson(_doc, _f);
+#ifdef DEBUG
+  if (_error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(_error.c_str());
+    return;
+  }
+#endif
+
+  for (int i = 0; i < _doc.size(); i++)
+  {
+    int pid = _doc[i]["id"];
+    Serial.println(pid);
+    if (pid == id)
+    {
+      _doc.remove(i);
+      Serial.println("remove");
+      break;
+    }
+  }
+  _f.close();
+
+  File _fw = SPIFFS.open(JSONpalFile, "w");
+  serializeJson(_doc, _fw);
+  _fw.close();
+#ifdef DEBUG
+  Serial.print(JSONpalFile);
+  Serial.println(" updated.");
+#endif
 }
 
 void sendCommand(byte command, byte arrLength, byte* arr)
@@ -282,8 +309,6 @@ int char2int(char input)
   return 0;
 }
 
-// This function assumes src to be a zero terminated sanitized string with
-// an even number of [0-9a-f] characters, and target to be sufficiently large
 void hex2bin(const char* src, byte* target)
 {
   while (*src && src[1])
@@ -310,7 +335,11 @@ bool handleFileRead(String path) { // send the right file to the client (if it e
   String contentType = getContentType(path);            // Get the MIME type
   if (SPIFFS.exists(path)) {                            // If the file exists
     File file = SPIFFS.open(path, "r");                 // Open it
-    if (path.endsWith(".html"))
+    if (path.endsWith(".json"))
+    {
+      server.sendHeader("Cache-Control", "no-cache");
+    }
+    else if (path.endsWith(".html"))
     {
       server.sendHeader("Cache-Control", "public, max-age=3600‬");
     }

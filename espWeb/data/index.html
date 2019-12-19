@@ -47,6 +47,28 @@
         </div>
     </nav>
     <div class="container mt-2">
+        <div class="modal fade" id="deletePaletteModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Вы действительно хотите удалить палитру?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="delpal" method="post">
+                        <div class="modal-body">
+                            <span id="removePalName" class="lead"></span>
+                            <input type="hidden" id="removePalId" name="id" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                            <input type="submit" value="Удалить"  id="removeBtn" class="btn btn-danger" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <h5>Выбор эффекта</h5>
         <form action="effset" method="post" data-ajax="true">
             <div class="form-group">
@@ -61,7 +83,7 @@
                     <option value="6">Fly</option>
                 </select>
             </div>
-            <i class="fas fa-palette"></i> Палитра
+            <i class="fas fa-palette"></i> Палитра <a data-toggle="modal" id="linkDel" class="text-danger d-none" href="#deletePaletteModal" title="Удалить палитру"><i class="far fa-times-circle"></i></a>
             <ul class="nav nav-tabs mt-1" id="palTab">
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#pal0">Rgb</a>
@@ -85,7 +107,7 @@
                     <a class="nav-link" id="profile-tab" data-toggle="tab" href="#pal6">IceBlue</a>
                 </li>
             </ul>
-            <div class="tab-content mt-2">
+            <div id="colors" class="tab-content mt-2">
                 <div class="tab-pane fade show active" id="pal0">
                     <div class="row">
                         <div class="col-3">
@@ -287,10 +309,78 @@
             <input type="submit" class="btn btn-lg btn-info btn-block" value="Отправить" />
         </form>
         <script type="text/javascript">
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                var palId = $(e.target).attr('href').substring(4);
+            $('body a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                tabActivated(e.target);
+            });
+
+            function tabActivated(e) {
+                var palId = $(e).attr('href').substring(4);
+                $('#removePalName').text($(e).text());
+                $('#removePalId').val(palId);
                 $('#b2').val(palId);
-            })
+                if ($(e).hasClass('custompal')) {
+                    console.log("cp")
+                    $('#linkDel').removeClass("d-none");
+                } else {
+                    $('#linkDel').addClass("d-none");
+                }
+            }
+
+            function customPaletteDownload() {
+                $.ajax({
+                    url: '/pallete.json',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        $(data).each(function () {
+                            var navtab = $('<li>', {
+                                class: 'nav-item',
+                                append: $('<a>', {
+                                    class: 'nav-link custompal',
+                                    onclick: 'tabActivated(this)',
+                                    id: this.id,
+                                    'data-toggle': 'tab',
+                                    href: '#pal' + this.id,
+                                    text: this.name
+                                })
+                            });
+
+                            $(navtab).appendTo($('#palTab'));
+
+                            var tabpane = $('<div>', {
+                                class: "tab-pane fade",
+                                id: 'pal' + this.id
+                            });
+
+                            var row = $('<div>', {
+                                class: "row"
+                            });
+
+                            $(this.colors).each(function () {
+                                var colorbox = $('<div>', {
+                                    class: "col-3",
+                                    append: $('<div>', {
+                                        class: "color-box",
+                                        append: $('<div>', {
+                                            class: "color",
+                                            css: { "background-color": "#" + this }
+                                        })
+                                    })
+                                });
+
+                                $(colorbox).appendTo($(row));
+                            });
+
+                            $(row).appendTo($(tabpane));
+                            $(tabpane).appendTo($('#colors'));
+                        });
+                    }
+                });
+            }
+
+            window.onload = function () {
+                customPaletteDownload();
+            }
         </script>
     </div>
 </body>
