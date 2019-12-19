@@ -4,10 +4,12 @@
 #include <ESP8266mDNS.h>
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
-#include <FS.h>   // Include the SPIFFS library
+#include <FS.h>
+#include <ArduinoJson.h>
 #include "commands.h"
 
-//#define DEBUG
+
+#define DEBUG
 
 ESP8266WiFiMulti wifiMulti;     // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
@@ -15,6 +17,7 @@ ESP8266WebServer server(80);    // Create a webserver object that listens for HT
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
+String JSONpalFile = "/pallete.json";
 String getContentType(String filename); // convert the file extension to the MIME type
 bool handleFileRead(String path);       // send the right file to the client (if it exists)
 int rId = 0;
@@ -63,7 +66,6 @@ void setup() {
   });
 
   server.on("/effset", HTTP_POST, handleSendCommand);
-  server.on("/runcolor", HTTP_POST, handleRunColor);
   server.on("/newpal", HTTP_POST, handleNewPal);
 
   server.begin();                           // Actually start the server
@@ -148,32 +150,86 @@ void handleSendCommand()
 
 void handleNewPal()
 {
+  if ( ! server.hasArg("palname") || ! server.hasArg("sc")
+       || server.arg("palname") == NULL || server.arg("sc") == NULL)
+  { // If the POST request doesn't have username and password data
+    server.send(400, "text/plain", "400: Invalid Request");         // The request is invalid, so send HTTP status 400
+    return;
+  }
+  String palname = server.arg("palname");
+  String sc = server.arg("sc");
+#ifdef DEBUG
+  Serial.print("http post [newpal] palname:");
+  Serial.print(palname);
+  Serial.print(", sc:");
+  Serial.println(sc);
+#endif
+  String JSONpal = "";
+  JSONpal += "{\"id\":" + String(random(10000000)) + ",";
+  JSONpal += "\"name\":\"" + palname + "\",";
+  JSONpal += "\"colors\":[\"";
+  for (byte i = 0; i < sc.length(); i++)
+  {
+    if (i > 0 && (i % 6 == 0))
+    {
+      JSONpal += ",\"";
+    }
+    JSONpal += sc[i];
+    if (i % 6 == 5)
+    {
+      JSONpal += "\"";
+    }
+  }
+  JSONpal += "]}";
+
+  File f = SPIFFS.open("/" + JSONpalFile, "a");
+  if (f.size() < 0)
+  {
+    f.println("[");
+    f.println(JSONpal);
+    f.print("]");
+  }
+  else
+  {
+
+  }
+  if (f.size() > 1)
+    f.print(",");
+  f.println(JSONpal);
+  f.close();
+#ifdef DEBUG
+  Serial.println("Added to " + JSONpalFile);
+  Serial.println(JSONpal);
+#endif
   server.sendHeader("Location", String("/"), true);
   server.send(302, "text/plain", "");
 }
 
-void handleRunColor()
+void addNePalToFile(long id, String palName, String colors)
 {
-  if ( ! server.hasArg("c") || ! server.hasArg("r")
-       || server.arg("c") == NULL || server.arg("r") == NULL) { // If the POST request doesn't have username and password data
-    server.send(400, "text/plain", "400: Invalid Request");         // The request is invalid, so send HTTP status 400
+  File _f = SPIFFS.open(JSONpalFile, "r");
+
+  DynamicJsonDocument _doc(_f.size() + 300);
+  DeserializationError _error = deserializeJson(_doc, _f);
+#ifdef DEBUG
+  if (_error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(_error.c_str());
     return;
   }
-  int r = server.arg("r").toInt();
-  if (r >= rId)
+#endif
+  
+  StaticJsonDocument<300> _newP;
+  _newP["id"] = id;
+  _newP["name"] = palName;
+  JsonArray _colrs = _newP.createNestedArray("colors");
+  for(int i = 0; i < colors.length(); i +=6)
   {
-    String s = server.arg("c");
-    char str[6];
-    for (int i = 0; i < 6; i++)
-    {
-      str[i] = s[i];
-    }
-    byte color[3];
-    hex2bin(str, color);
-
-    sendCommand(CMD_RUNCOLOR, 3, color);
-    server.send(200, "text/html", "ok");
+    _colrs.add(colors.substring(i, i+6));
   }
+
+  _doc.add(_newP);
+  serializeJsonPretty(_doc, Serial);
 }
 
 void sendCommand(byte command, byte arrLength, byte* arr)
