@@ -1,7 +1,7 @@
 #define COMMAND_MARKER 255 //byte marking the command is going on
 #define CMD_SETAP '=' //set animation and palette
 #define CMD_RUNCOLOR 'C' //color preview
-#define CMD_MPOS 'Q' //set animation and custom palette
+#define CMD_SETAPCUSTOM 'Q' //set animation and custom palette
 #define CMD_MAGIC '!' //enter magic mode
 #define CMD_MPOS 'P' //data in magic mode
 

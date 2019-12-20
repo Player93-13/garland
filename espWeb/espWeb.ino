@@ -9,7 +9,7 @@
 #include "commands.h"
 
 
-#define DEBUG
+//#define DEBUG
 
 ESP8266WiFiMulti wifiMulti;     // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
 
@@ -138,9 +138,64 @@ void handleSendCommand()
     server.send(400, "text/plain", "400: Invalid Request");         // The request is invalid, so send HTTP status 400
     return;
   }
-  byte vars[2] = { (byte)(server.arg("b1").toInt()), (byte)(server.arg("b2").toInt())};
+  if (server.arg("b2").toInt() < 100)
+  {
+    byte vars[2] = { (byte)(server.arg("b1").toInt()), (byte)(server.arg("b2").toInt())};
+    sendCommand(CMD_SETAP, 2, vars);
+  }
+  else
+  {
+    int palid = server.arg("b2").toInt();
+    File _f = SPIFFS.open(JSONpalFile, "r");
 
-  sendCommand(CMD_SETAP, 2, vars);
+    DynamicJsonDocument _doc(_f.size() * 4 + 5000);
+    DeserializationError _error = deserializeJson(_doc, _f);
+#ifdef DEBUG
+    if (_error) {
+      Serial.print(F("deserializeJson() failed: "));
+      Serial.println(_error.c_str());
+      return;
+    }
+#endif
+    int pindex = -1;
+    for (int i = 0; i < _doc.size(); i++)
+    {
+      int pid = _doc[i]["id"];
+      if (pid == palid)
+      {
+        pindex = i;
+        break;
+      } 
+    }
+
+    byte leng = (byte)(_doc[pindex]["colors"].size());
+    byte arrleng = leng * 3 + 1;
+    byte* vars = new byte[arrleng];
+    vars[0] = (byte)(server.arg("b1").toInt());
+    byte arrpos = 1;
+    for(int j = 0; j < leng; j++)
+    {
+      char str[6];
+      for (int i = 0; i < 6; i++)
+      {
+        String temp = _doc[pindex]["colors"][j];
+        str[i] = temp[i];
+      }
+      byte color[3];
+      hex2bin(str, color);
+
+      for (int i = 0; i < 3; i++)
+      {
+        vars[arrpos++] = color[i];
+      }
+    }
+
+    sendCommand(CMD_SETAPCUSTOM, arrleng, vars);
+    
+    delete[] vars;
+    _f.close();
+  }
+
   server.send(200, "text/html", "ok");
 }
 
@@ -154,7 +209,7 @@ void handleNewPal()
   }
   String palname = server.arg("palname");
   String sc = server.arg("sc");
-  long id = random(10000000);
+  long id = random(101, 10000000);
 #ifdef DEBUG
   Serial.print("http post [newpal] palname:");
   Serial.print(palname);
@@ -240,11 +295,9 @@ void deletePal(int id)
   for (int i = 0; i < _doc.size(); i++)
   {
     int pid = _doc[i]["id"];
-    Serial.println(pid);
     if (pid == id)
     {
       _doc.remove(i);
-      Serial.println("remove");
       break;
     }
   }

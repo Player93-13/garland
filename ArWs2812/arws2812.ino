@@ -18,7 +18,7 @@
 //#define DEBUG //if defined, debug data is output to hardware serial port. REMEMBER TO REMOVE this definition once BTHS is set
 
 Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &PalHeat, &PalFire, &PalIceBlue};
-
+Color CustomPal [45];
 Anim anim = Anim();
 
 #ifndef BTHS
@@ -69,21 +69,6 @@ void setup() {
 }
 
 void loop() {
-  /* this piece of code checks for looping while trying to find different colors
-    for (int pi=0;pi<PALS;pi++) {
-    int c = 0;
-
-    Serial.print(F("pi="));Serial.print(pi);
-    Color c1 = pals[pi]->getPalColor((float)rngb()/256);
-    Color c2 = c1;
-    while (c1.isCloseTo(c2)) {
-      c = c + 1;
-      c2 = pals[pi]->getPalColor((float)rngb()/256);
-    }
-    Serial.print(F(" c="));Serial.println(c);
-    }
-    /**/
-
   if (Serial3.available())
   {
     if (cmdPos == 0)
@@ -122,7 +107,7 @@ void loop() {
         if (cmdPos == 2)
         {
           byte bcmd = Serial3.peek();
-          if (bcmd != CMD_RUNCOLOR && bcmd != CMD_SETAP) // Заведомо ложная команда, прекращаем считывание
+          if (bcmd != CMD_RUNCOLOR && bcmd != CMD_SETAP && bcmd != CMD_SETAPCUSTOM) // Заведомо ложная команда, прекращаем считывание
           {
             cmdPos = 0;
             commandComplete = false;
@@ -183,9 +168,36 @@ void loop() {
         {
           anim.setAnim(command[1]);
           anim.setPalette(pals[command[2]]);
-          Serial3.write(command, 3);
           ms = millis() + INTERVAL;
         }
+      }
+
+      if (commandComplete && command[0] == CMD_SETAPCUSTOM)
+      {
+        if (command[1] < ANIMS && commandLength > 3)
+        {
+          byte _palpos = 0;
+          for (int i = 2; i < commandLength; i += 3)
+          {
+            Color _c;
+            _c.r = command[i];
+            _c.g = command[i + 1];
+            _c.b = command[i + 2];
+
+            CustomPal[_palpos++] = _c;
+          }
+
+          Palette PalRainbow = { _palpos - 1, CustomPal };
+
+          anim.setAnim(command[1]);
+          anim.setPalette(&PalRainbow);
+          ms = millis() + INTERVAL;
+        }
+
+        #ifdef DEBUG
+      if (commandComplete)
+        Serial.print(F("RAM=")); Serial.println(freeRam());
+#endif
       }
 
       if (commandComplete && command[0] == CMD_RUNCOLOR)

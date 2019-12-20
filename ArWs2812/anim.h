@@ -4,8 +4,8 @@
 #include "palette.h"
 
 #define PIN 40 // WS2812 pin number
-#define LEDS 150 // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
-#define BRIGHTNESS 256// brightness adjustment, up to 256
+#define LEDS 220 // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
+#define BRIGHTNESS 255// brightness adjustment, up to 256
 
 #define TRANSITION_MS 1000 // transition time between animations, ms
 
