@@ -54,7 +54,8 @@ void Anim::animSparkr_Run() {
     if (phase > 2*LEDS) {
         phase = 0;
         prevColor = curColor;
-        while (prevColor.isCloseTo(curColor)) { 
+        byte x = 0;
+        while (prevColor.isCloseTo(curColor) && x++ < 50) { 
           curColor = palette->getPalColor((float)rngb()/256);     
         }
         AnimSparkr_shuffleSeq(seq);

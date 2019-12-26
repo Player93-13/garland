@@ -38,7 +38,9 @@ void Anim::animPixieDust_Run() {
         if (phase <= -3*LEDS) {
             phase = LEDS + DUST_LENGTH/2;
             prevColor = curColor;
-            while (prevColor.isCloseTo(curColor)) { 
+            byte x = 0;
+            while (prevColor.isCloseTo(curColor) && x++ < 50) 
+            { 
               curColor = palette->getPalColor((float)rngb()/256);     
             }
         }

@@ -10,15 +10,18 @@
 #include "button_classes.hpp"
 
 #define ANIMS 7 //number of animations
-#define PALS 7 //number of palettes
+#define PALS 8 //number of palettes
 #define INTERVAL 10000 //change interval, msec
 
 
 //#define BTHS //whether to use hardware serial to communicate Bluetooth. Software serial is used otherwise
 //#define DEBUG //if defined, debug data is output to hardware serial port. REMEMBER TO REMOVE this definition once BTHS is set
 
-Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &PalHeat, &PalFire, &PalIceBlue};
-Color CustomPal [45];
+Color PalCustom_ [45];
+Palette PalCustom = { 1, PalCustom_ };
+
+Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &PalHeat, &PalFire, &PalIceBlue, &PalCustom};
+
 Anim anim = Anim();
 
 #ifndef BTHS
@@ -184,13 +187,13 @@ void loop() {
             _c.g = command[i + 1];
             _c.b = command[i + 2];
 
-            CustomPal[_palpos++] = _c;
+            PalCustom_[_palpos++] = _c;
           }
 
-          Palette PalRainbow = { _palpos - 1, CustomPal };
+          PalCustom.numColors = _palpos - 1;
 
           anim.setAnim(command[1]);
-          anim.setPalette(&PalRainbow);
+          anim.setPalette(pals[7]);
           ms = millis() + INTERVAL;
         }
 
