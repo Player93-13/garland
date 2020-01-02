@@ -48,6 +48,14 @@ struct Color
     return Color(r0, g0, b0);
   }
 
+  Color clone()
+  {
+    byte r0 = r;
+    byte g0 = g;
+    byte b0 = b;
+    return Color(r0, g0, b0);
+  }
+
   void gammaCorrection()
   {
     r = pgm_read_byte_near(BRI + r);
