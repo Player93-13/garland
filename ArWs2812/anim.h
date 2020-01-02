@@ -110,9 +110,6 @@ class Anim {
     void animBT_SetUp();
     void animBT_Run();
 
-    void animChina_SetUp();
-    void animChina_Run();
-
   public:
 
 

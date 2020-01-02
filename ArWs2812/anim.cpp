@@ -124,8 +124,8 @@ void Anim::setAnim(byte animInd)
       setUpOnPalChange = false;
       break;
     case 6:
-      setUpImpl = &Anim::animChina_SetUp;
-      runImpl = &Anim::animChina_Run;
+      setUpImpl = &Anim::animFly_SetUp;
+      runImpl = &Anim::animFly_Run;
       setUpOnPalChange = false;
       break;
     case 7: //special
