@@ -4,11 +4,8 @@
 #include "palette.h"
 
 #define PIN 40 // WS2812 pin number
-#define GARL 150
-#define STAR 11
-#define LEDS GARL + STAR  // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
-#define BRIGHTNESS 255// brightness adjustment, up to 255
-#define STARBRIGHTNESS 180
+#define LEDS 220 // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
+#define BRIGHTNESS 256// brightness adjustment, up to 256
 
 #define TRANSITION_MS 1000 // transition time between animations, ms
 
@@ -21,8 +18,8 @@
 #define SPARK_PROB 3
 
 class Anim {
-
-  private:
+    
+private:
     //Color arrays - two for making transition
     static Color leds1[LEDS];
     static Color leds2[LEDS];
@@ -30,14 +27,14 @@ class Anim {
     static Color ledstmp[LEDS];
 
     void animStart();
-
+    
     // length of animation timeslot (period)
     byte period;
     // array of Color to work with
     Color *leds;
     Palette *palette;
 
-    // millis for next timeslot
+    // millis for next timeslot 
     unsigned long nextms;
     // millis to transition end
     unsigned long transms;
@@ -59,10 +56,10 @@ class Anim {
 
     //brigthness animation (BrA) current initial phase
     byte braPhase;
-    //braPhase change speed
-    byte braPhaseSpd = 5;
+    //braPhase change speed 
+    byte braPhaseSpd=5;
     //BrA frequency (spatial)
-    byte braFreq = 150;
+    byte braFreq=150;
 
     //glow animation setup
     void glowSetUp();
@@ -71,7 +68,7 @@ class Anim {
     //note this overwrites the LED color, so the glow assumes that color will be stored elsewhere (not in leds[])
     //or computed each time regardless previous leds[] value
     void glowForEachLed(int i);
-
+    
     //glow animation - must be called at the end of each animaton run
     void glowRun();
 
@@ -88,10 +85,10 @@ class Anim {
 
     void animRun_SetUp();
     void animRun_Run();
-
+    
     void animPixieDust_SetUp();
     void animPixieDust_Run();
-
+    
     void animSparkr_SetUp();
     void animSparkr_Run();
 
@@ -110,7 +107,7 @@ class Anim {
     void animBT_SetUp();
     void animBT_Run();
 
-  public:
+public:
 
 
     Anim();
