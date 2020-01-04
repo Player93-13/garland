@@ -44,15 +44,16 @@ bool Anim::run()
   float transc = (float)((long)transms - (long)millis()) / TRANSITION_MS;
   Color * leds_prev = (leds == leds1) ? leds2 : leds1;
 
-  for (int i = 0; i < LEDS; i++) {
-    Color c = leds[i].clone();
+  for (int i = 0; i < LEDS; i++)
+  {
+    Color c = leds[i];
     
     if (transc > 0)  //transition is in progress
-      Color c = c.interpolate(leds_prev[i], transc);
-      
+      c = c.interpolate(leds_prev[i], transc);     
+
     c.setbrightness(i < GARL ? BRIGHTNESS : STARBRIGHTNESS);
     c.gammaCorrection();
-    
+
     if (i < GARL)
       pixels.setPixelColor(i, pixels.Color(c.r, c.g, c.b));
     else
