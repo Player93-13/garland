@@ -44,11 +44,13 @@ bool Anim::run()
   float transc = (float)((long)transms - (long)millis()) / TRANSITION_MS;
   Color * leds_prev = (leds == leds1) ? leds2 : leds1;
 
+  bool tran = transc > 0;
+
   for (int i = 0; i < LEDS; i++)
   {
     Color c = leds[i];
     
-    if (transc > 0)  //transition is in progress
+    if (tran)  //transition is in progress
       c = c.interpolate(leds_prev[i], transc);     
 
     c.setbrightness(i < GARL ? BRIGHTNESS : STARBRIGHTNESS);

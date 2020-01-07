@@ -6,9 +6,9 @@
 #define PIN 40 // WS2812 pin number
 #define GARL 150
 #define STAR 11
-#define LEDS GARL + STAR  // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
+#define LEDS 161  // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
 #define BRIGHTNESS 255// brightness adjustment, up to 255
-#define STARBRIGHTNESS 180
+#define STARBRIGHTNESS 200
 
 #define TRANSITION_MS 1000 // transition time between animations, ms
 

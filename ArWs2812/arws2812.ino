@@ -154,7 +154,7 @@ void loop() {
       byte b = (int)pgm_read_byte_near(BRI + command[3]);
       for (int i = 0; i < LEDS; i++)
       {
-        if (i < 150)
+        if (i < GARL)
           pixels.setPixelColor(i, pixels.Color(r, g, b));
         else
           pixels.setPixelColor(i, pixels.Color(g, r, b));
