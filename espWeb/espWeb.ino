@@ -28,7 +28,7 @@ void setup() {
 
   wifiMulti.addAP("Keenetic-4431", "123asdqwe");   // add Wi-Fi networks you want to connect to
   wifiMulti.addAP("Keenetic-4013", "cnitapple");
-  wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3");
+  wifiMulti.addAP("HUAWEI-42", "123asdqwe");
 
 #ifdef DEBUG
   Serial.println("Connecting ...");

@@ -3,10 +3,10 @@
 #include <Adafruit_NeoPixel.h>
 #include "palette.h"
 
-#define PIN 40 // WS2812 pin number
-#define GARL 150
+#define PIN 12 // WS2812 pin number
+#define GARL 199
 #define STAR 11
-#define LEDS 161  // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
+#define LEDS 210  // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
 #define BRIGHTNESS 255// brightness adjustment, up to 255
 #define STARBRIGHTNESS 200
 
