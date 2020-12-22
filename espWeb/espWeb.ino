@@ -25,21 +25,11 @@ int rId = 0;
 void setup() {
   Serial.begin(115200);         // Start the Serial communication to send messages to the computer
   delay(10);
-
-  wifiMulti.addAP("Keenetic-4431", "123asdqwe");   // add Wi-Fi networks you want to connect to
-  wifiMulti.addAP("Keenetic-4013", "cnitapple");
-  wifiMulti.addAP("HUAWEI-42", "123asdqwe");
-
+  WiFi.mode(WIFI_STA);
 #ifdef DEBUG
   Serial.println("Connecting ...");
 #endif
-  int i = 0;
-  while (wifiMulti.run() != WL_CONNECTED) { // Wait for the Wi-Fi to connect
-    delay(250);
-#ifdef DEBUG
-    Serial.print('.');
-#endif
-  }
+  WiFi.begin("HUAWEI-42", "123asdqwe");
 #ifdef DEBUG
   Serial.println('\n');
   Serial.print("Connected to ");
@@ -47,16 +37,6 @@ void setup() {
   Serial.print("IP address:\t");
   Serial.println(WiFi.localIP());           // Send the IP address of the ESP8266 to the computer
 #endif
-
-  if (MDNS.begin("esp8266")) {              // Start the mDNS responder for esp8266.local
-#ifdef DEBUG
-    Serial.println("mDNS responder started");
-#endif
-  } else {
-#ifdef DEBUG
-    Serial.println("Error setting up MDNS responder!");
-#endif
-  }
 
   SPIFFS.begin();                           // Start the SPI Flash Files System
 
@@ -165,7 +145,7 @@ void handleSendCommand()
       {
         pindex = i;
         break;
-      } 
+      }
     }
 
     byte leng = (byte)(_doc[pindex]["colors"].size());
@@ -173,7 +153,7 @@ void handleSendCommand()
     byte* vars = new byte[arrleng];
     vars[0] = (byte)(server.arg("b1").toInt());
     byte arrpos = 1;
-    for(int j = 0; j < leng; j++)
+    for (int j = 0; j < leng; j++)
     {
       char str[6];
       for (int i = 0; i < 6; i++)
@@ -191,7 +171,7 @@ void handleSendCommand()
     }
 
     sendCommand(CMD_SETAPCUSTOM, arrleng, vars);
-    
+
     delete[] vars;
     _f.close();
   }
