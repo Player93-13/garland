@@ -6,9 +6,14 @@
 #define PIN 2 // WS2812 pin number
 #define GARL 199
 #define STAR 11
-#define LEDS 210  // number of LEDs in the strip. Not sure why, but 100 leds don't work with software serial! Works with hardware serial though
+#define LEDS 210  // number of LEDs in the strip.
 #define BRIGHTNESS 255// brightness adjustment, up to 255
 #define STARBRIGHTNESS 200
+
+#define ANIMS 9 //number of animations
+#define PALS 8 //number of palettes
+#define PALCUSTOM_ID 7
+#define ANIM_FILL_ID 100
 
 #define TRANSITION_MS 1000 // transition time between animations, ms
 
@@ -119,6 +124,12 @@ class Anim {
     void animFly_SetUp();
     void animFly_Run();
 
+    void animOff_SetUp();
+    void animOff_Run();
+
+    void animFill_SetUp();
+    void animFill_Run();
+
     Color GetGradientColor(int pos, float colorOffset, int paletteCut);
 
   public:
@@ -127,14 +138,19 @@ class Anim {
     Anim();
     void setPeriod(byte period);
     void setPalette(Palette * pal);
+    void setPaletteById(int id);
     void setAnim(byte animInd);
     bool run();//returns true if actual change has completed, or false if it's dummy call (previous call was too recent in time)
     void doSetUp();
+
+   
 
 };
 
 unsigned int rng();
 
 byte rngb();
+
+void AnimSetup();
 
 #endif

@@ -6,7 +6,10 @@
 //Adafruit's class to operate strip
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
+Color PalCustom_ [64];
+Palette PalCustom = { 1, PalCustom_ };
 
+Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &PalHeat, &PalFire, &PalIceBlue, &PalCustom};
 
 Anim::Anim()
 {
@@ -23,6 +26,11 @@ void Anim::setPalette(Palette * pal) {
     setUp();
   }
   pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void Anim::setPaletteById(int id)
+{
+  this->setPalette(pals[id]);
 }
 
 bool Anim::run()
@@ -140,9 +148,14 @@ void Anim::setAnim(byte animInd)
       runImpl = &Anim::animSpread_Run;
       setUpOnPalChange = false;
       break;
+    case ANIM_FILL_ID:
+      setUpImpl = &Anim::animFill_SetUp;
+      runImpl = &Anim::animFill_Run;
+      setUpOnPalChange = true;
+      break;
     default:
-      setUpImpl = &Anim::animStart_SetUp;
-      runImpl = &Anim::animStart_Run;
+      setUpImpl = &Anim::animOff_SetUp;
+      runImpl = &Anim::animOff_Run;
       setUpOnPalChange = true;
       break;
   }
@@ -168,6 +181,17 @@ Color Anim::GetGradientColor(int pos, float colorOffset, int paletteCut)
     x--;
     
   return palette->getPalColor(x);
+}
+
+Anim anim = Anim();
+
+void AnimSetup()
+{
+  pixels.begin();
+  anim.setAnim(0);
+  anim.setPeriod(20);
+  anim.setPalette(pals[0]);
+  anim.doSetUp();
 }
 
 Color Anim::leds1[LEDS];
