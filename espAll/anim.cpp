@@ -36,10 +36,10 @@ void Anim::setPaletteById(int id)
 bool Anim::run()
 {
   if ( millis() <= nextms) {
-    digitalWrite(LED_BUILTIN, LOW);
+    //digitalWrite(LED_BUILTIN, LOW);
     return false;
   }
-  digitalWrite(LED_BUILTIN, HIGH);
+  //digitalWrite(LED_BUILTIN, HIGH);
   nextms = millis() + period;
 
   if (runImpl != NULL)
