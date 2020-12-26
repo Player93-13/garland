@@ -25,7 +25,8 @@ void WebServerSetup()
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
 
-  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
+  server.serveStatic("/pallete.json", SPIFFS, "/pallete.json").setCacheControl("no-cache");
+  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html").setCacheControl("max-age=604800");
 
   server.onNotFound([](AsyncWebServerRequest * request) {
     request->send(404);
