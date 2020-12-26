@@ -2,7 +2,7 @@
 
 void Anim::glowSetUp()
 {
-    braPhaseSpd = random(8,13);
+    braPhaseSpd = random(3,8);
     braFreq = random(40,120);
 }
 
