@@ -4,28 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Управление гирляндой</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link href="css/all.min.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-ajax-unobtrusive@3.2.6/dist/jquery.unobtrusive-ajax.min.js" crossorigin="anonymous"></script>
     <script src="js/jscolor.js"></script>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body class="text-white bg-dark">
+    <nav class="navbar navbar-expand navbar-dark bg-dark" style="padding: 0.5rem 1rem 0.5rem 1rem">
         <div class="container">
-            <i class="fas fa-tree" style="color: #fff; font-size: 2rem;top: 0.75rem;left: 0.75rem;"></i><span class="navbar-brand ml-1">Гирлянда</span>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <svg style="color: #fff; width: 32px; height: 32px;" aria-hidden="true" focusable="false" data-prefix="far" data-icon="tree" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-tree fa-w-14 fa-3x"><path fill="currentColor" d="M442.2 376.2l-55.5-64.4h5.3c9.3 0 17.8-5.4 21.8-13.9 3.9-8.5 2.6-18.5-3.5-25.6l-54.6-64.5H368c9.5 0 18.1-5.6 21.9-14.2 3.8-8.7 2.2-18.8-4.1-25.8L241.9 7.6c-9.1-10.1-26.6-10.1-35.7 0l-144 160.1c-6.3 7.1-7.9 17.2-4.1 25.8 3.9 8.7 12.5 14.2 21.9 14.2h12.2l-54.6 64.5c-6 7.1-7.4 17.1-3.5 25.6s12.4 13.9 21.8 13.9h5.3L5.8 376.2c-6.1 7.1-7.5 17.2-3.6 25.7s12.4 14 21.8 14h168v24.5l-30.3 48.4c-5.3 10.6 2.4 23.2 14.3 23.2h96c11.9 0 19.6-12.5 14.3-23.2L256 440.4v-24.5h168c9.4 0 17.9-5.5 21.8-14s2.5-18.6-3.6-25.7zm-365.8-8.3L166 263.8h-58.3l88-104.1h-61.9L224 59.5l90.1 100.2h-61.9l88 104.1H282l89.7 104.1z" class=""></path></svg>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav justify-content-center w-100">
                     <li class="nav-item">
-                        <a class="nav-link" href="/index.html"><i class="fas fa-holly-berry"></i> Выбор эффекта</a>
+                        <a class="nav-link" href="/index.html"><svg style="width:18px; height:18px;" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="holly-berry" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-holly-berry fa-w-14 fa-3x"><path fill="currentColor" d="M144 192c26.5 0 48-21.5 48-48s-21.5-48-48-48-48 21.5-48 48 21.5 48 48 48zm112-48c0 26.5 21.5 48 48 48s48-21.5 48-48-21.5-48-48-48-48 21.5-48 48zm-32-48c26.5 0 48-21.5 48-48S250.5 0 224 0s-48 21.5-48 48 21.5 48 48 48zm-16.2 139.1c.1-12.4-13.1-20.1-23.8-13.7-34.3 20.3-71.4 32.7-108.7 36.2-9.7.9-15.6 11.3-11.6 20.2 6.2 13.9 11.1 28.6 14.7 43.8 3.6 15.2-5.3 30.6-20.2 35.1-14.9 4.5-30.1 7.6-45.3 9.1-9.7 1-15.7 11.3-11.7 20.2 15 32.8 22.9 69.5 23 107.7.1 14.4 15.2 23.1 27.6 16 33.2-19 68.9-30.5 104.8-33.9 9.7-.9 15.6-11.3 11.6-20.2-6.2-13.9-11.1-28.6-14.7-43.8-3.6-15.2 5.3-30.6 20.2-35.1 14.9-4.5 30.1-7.6 45.3-9.1 9.7-1 15.7-11.3 11.7-20.2-15.5-34.2-23.3-72.5-22.9-112.3zM435 365.6c-15.2-1.6-30.3-4.7-45.3-9.1-14.9-4.5-23.8-19.9-20.2-35.1 3.6-15.2 8.5-29.8 14.7-43.8 4-8.9-1.9-19.3-11.6-20.2-37.3-3.5-74.4-15.9-108.7-36.2-10.7-6.3-23.9 1.4-23.8 13.7 0 1.6-.2 3.2-.2 4.9.2 33.3 7 65.7 19.9 94 5.7 12.4 5.2 26.6-.6 38.9 4.9 1.2 9.9 2.2 14.8 3.7 14.9 4.5 23.8 19.9 20.2 35.1-3.6 15.2-8.5 29.8-14.7 43.8-4 8.9 1.9 19.3 11.6 20.2 35.9 3.4 71.6 14.9 104.8 33.9 12.5 7.1 27.6-1.6 27.6-16 .2-38.2 8-75 23-107.7 4.3-8.7-1.8-19.1-11.5-20.1z" class=""></path></svg> Эффект</a>
                     </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/palCreate.html"><i class="fas fa-palette"></i> Добавление палитры</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/palCreate.html"><svg style="width:18px; height:18px;" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="palette" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-palette fa-w-16 fa-3x"><path fill="currentColor" d="M204.3 5C104.9 24.4 24.8 104.3 5.2 203.4c-37 187 131.7 326.4 258.8 306.7 41.2-6.4 61.4-54.6 42.5-91.7-23.1-45.4 9.9-98.4 60.9-98.4h79.7c35.8 0 64.8-29.6 64.9-65.3C511.5 97.1 368.1-26.9 204.3 5zM96 320c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm32-128c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128-64c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128 64c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z" class=""></path></svg> Палитра</a>
                     </li>
                 </ul>
             </div>
@@ -52,7 +48,7 @@
                 </div>
             </div>
         </div>
-        <h5>Добавление палитры <i class="fas fa-palette"></i></h5>
+        <h5>Добавление палитры <svg style="width:20px; height:20px;" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="palette" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-palette fa-w-16 fa-3x"><path fill="currentColor" d="M204.3 5C104.9 24.4 24.8 104.3 5.2 203.4c-37 187 131.7 326.4 258.8 306.7 41.2-6.4 61.4-54.6 42.5-91.7-23.1-45.4 9.9-98.4 60.9-98.4h79.7c35.8 0 64.8-29.6 64.9-65.3C511.5 97.1 368.1-26.9 204.3 5zM96 320c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm32-128c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128-64c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128 64c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z" class=""></path></svg></h5>
         <form action="newpal" method="post" onsubmit="doSubmit()">
             <input type="hidden" name="sc" id="sc" />
             <div class="form-group">
@@ -64,13 +60,13 @@
                     <div class="input-group">
                         <input type="text" class="jscolor {onFineChange:'update(this)', width:243, height:150, borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666' } form-control" id="c1" />
                         <div class="input-group-append">
-                            <button class="btn btn-outline-danger rem-mod-btn" type="button" disabled data-toggle="modal" data-target="#deleteColorModal" data-whatever="c1"><i class="far fa-trash-alt"></i></button>
+                            <button class="btn btn-outline-danger rem-mod-btn" type="button" disabled data-toggle="modal" data-target="#deleteColorModal" data-whatever="c1"><svg style="width:16px; height:16px;" aria-hidden="true" focusable="false" data-prefix="fal" data-icon="trash-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash-alt fa-w-14 fa-3x"><path fill="currentColor" d="M296 432h16a8 8 0 0 0 8-8V152a8 8 0 0 0-8-8h-16a8 8 0 0 0-8 8v272a8 8 0 0 0 8 8zm-160 0h16a8 8 0 0 0 8-8V152a8 8 0 0 0-8-8h-16a8 8 0 0 0-8 8v272a8 8 0 0 0 8 8zM440 64H336l-33.6-44.8A48 48 0 0 0 264 0h-80a48 48 0 0 0-38.4 19.2L112 64H8a8 8 0 0 0-8 8v16a8 8 0 0 0 8 8h24v368a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V96h24a8 8 0 0 0 8-8V72a8 8 0 0 0-8-8zM171.2 38.4A16.1 16.1 0 0 1 184 32h80a16.1 16.1 0 0 1 12.8 6.4L296 64H152zM384 464a16 16 0 0 1-16 16H80a16 16 0 0 1-16-16V96h320zm-168-32h16a8 8 0 0 0 8-8V152a8 8 0 0 0-8-8h-16a8 8 0 0 0-8 8v272a8 8 0 0 0 8 8z" class=""></path></svg></button>
                         </div>
                     </div>
                 </div>
             </div>
-            <button class="btn btn-lg btn-block btn-outline-dark" onclick="addColor(); return false;">Добавить другой цвет</button>
-            <input type="submit" class="btn btn-lg btn-block btn-info" value="Сохранить палитру" />
+            <button class="btn btn-lg btn-block btn-outline-light" onclick="addColor(); return false;">Добавить другой цвет</button>
+            <input type="submit" class="btn btn-lg btn-block btn-light" value="Сохранить палитру" />
         </form>
         <script type="text/javascript">
             var wait = false;
@@ -100,9 +96,7 @@
                                     'data-toggle': 'modal',
                                     'data-target': '#deleteColorModal',
                                     'data-whatever': "c" + colors,
-                                    append: $('<i>', {
-                                        class: 'far fa-trash-alt'
-                                    })
+                                    append: '<svg style="width:16px; height:16px;" aria-hidden="true" focusable="false" data-prefix="fal" data-icon="trash-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash-alt fa-w-14 fa-3x"><path fill="currentColor" d="M296 432h16a8 8 0 0 0 8-8V152a8 8 0 0 0-8-8h-16a8 8 0 0 0-8 8v272a8 8 0 0 0 8 8zm-160 0h16a8 8 0 0 0 8-8V152a8 8 0 0 0-8-8h-16a8 8 0 0 0-8 8v272a8 8 0 0 0 8 8zM440 64H336l-33.6-44.8A48 48 0 0 0 264 0h-80a48 48 0 0 0-38.4 19.2L112 64H8a8 8 0 0 0-8 8v16a8 8 0 0 0 8 8h24v368a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V96h24a8 8 0 0 0 8-8V72a8 8 0 0 0-8-8zM171.2 38.4A16.1 16.1 0 0 1 184 32h80a16.1 16.1 0 0 1 12.8 6.4L296 64H152zM384 464a16 16 0 0 1-16 16H80a16 16 0 0 1-16-16V96h320zm-168-32h16a8 8 0 0 0 8-8V152a8 8 0 0 0-8-8h-16a8 8 0 0 0-8 8v272a8 8 0 0 0 8 8z" class=""></path></svg>'
                                 })
                             }))
                     })
