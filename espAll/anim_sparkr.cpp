@@ -37,7 +37,7 @@ void Anim::animSparkr_Run() {
 
         leds[pos] = (i > phase)
             ? prevColor 
-            : (i == phase) ? sparkleColor : curColor;
+            : (i > (phase - 2)) ? sparkleColor : curColor;
         glowForEachLed(pos);
     }
     glowRun();

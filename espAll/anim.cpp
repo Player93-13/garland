@@ -35,7 +35,7 @@ void Anim::setPaletteById(int id)
 
 bool Anim::run()
 {
-  if ( millis() <= nextms) {
+  if ( millis() <= nextms || off) {
     //digitalWrite(LED_BUILTIN, LOW);
     return false;
   }
@@ -102,6 +102,8 @@ void Anim::doSetUp()
 
 void Anim::setAnim(byte animInd)
 {
+  off = false;
+  
   switch (animInd) {
     case 0:
       setUpImpl = &Anim::animRun_SetUp;
@@ -141,12 +143,12 @@ void Anim::setAnim(byte animInd)
     case 7:
       setUpImpl = &Anim::animStars_SetUp;
       runImpl = &Anim::animStars_Run;
-      setUpOnPalChange = false;
+      setUpOnPalChange = true;
       break;
     case 8:
       setUpImpl = &Anim::animSpread_SetUp;
       runImpl = &Anim::animSpread_Run;
-      setUpOnPalChange = false;
+      setUpOnPalChange = true;
       break;
     case ANIM_FILL_ID:
       setUpImpl = &Anim::animFill_SetUp;
@@ -188,7 +190,7 @@ Anim anim = Anim();
 void AnimSetup()
 {
   pixels.begin();
-  anim.setAnim(0);
+  anim.setAnim(-1);
   anim.setPeriod(20);
   anim.setPalette(pals[0]);
   anim.doSetUp();

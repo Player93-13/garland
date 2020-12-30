@@ -3,7 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 #include "palette.h"
 
-#define PIN 2 // WS2812 pin number
+#define PIN 13 // WS2812 pin number
 #define GARL 199
 #define STAR 11
 #define LEDS 210  // number of LEDs in the strip.
@@ -51,6 +51,8 @@ class Anim {
     int pos;
     int inc;
     int palCut;
+
+    bool off;
 
     //whether to call SetUp on palette change
     //(some animations require full transition with fade, otherwise the colors would change in a step, some not)

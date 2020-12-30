@@ -35,7 +35,7 @@ void Anim::animSparkrGrad_Run() {
 
         leds[pos] = (i > phase)
             ? GetGradientColor(pos, prevColorOffset, palCut) 
-            : (i == phase) ? sparkleColor : GetGradientColor(pos, curColorOffset, palCut);
+            : (i > (phase - 2)) ? sparkleColor : GetGradientColor(pos, curColorOffset, palCut);
         glowForEachLed(pos);
     }
     glowRun();
