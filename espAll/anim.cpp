@@ -4,7 +4,8 @@
 #include "anim.h"
 
 //Adafruit's class to operate strip
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(LEDS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(GARL + STAR, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels_wall = Adafruit_NeoPixel(WALL, PIN_WALL, NEO_GRB + NEO_KHZ800);
 
 Color PalCustom_ [64];
 Palette PalCustom = { 1, PalCustom_ };
@@ -66,11 +67,14 @@ bool Anim::run()
 
     if (i < GARL)
       pixels.setPixelColor(i, pixels.Color(c.r, c.g, c.b));
-    else
-      pixels.setPixelColor(LEDS - (i - GARL) - 1, pixels.Color(c.g, c.r, c.b));
+    else if (i >= GARL && i < STAR + GARL)
+      pixels.setPixelColor((STAR + GARL) - (i - GARL) - 1, pixels.Color(c.g, c.r, c.b));
+    else if (i >= STAR + GARL)
+      pixels_wall.setPixelColor(i - (STAR + GARL), pixels.Color(c.r, c.g, c.b));
   }
 
   pixels.show();
+  pixels_wall.show();
 
   return true;
 }
@@ -190,6 +194,7 @@ Anim anim = Anim();
 void AnimSetup()
 {
   pixels.begin();
+  pixels_wall.begin();
   anim.setAnim(-1);
   anim.setPeriod(20);
   anim.setPalette(pals[0]);
@@ -200,3 +205,4 @@ Color Anim::leds1[LEDS];
 Color Anim::leds2[LEDS];
 Color Anim::ledstmp[LEDS];
 byte Anim::seq[LEDS];
+uint16 Anim::positions[LEDS];

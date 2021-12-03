@@ -3,19 +3,23 @@
 #include <Adafruit_NeoPixel.h>
 #include "palette.h"
 
-#define PIN 13 // WS2812 pin number
-#define GARL 199
+#define PIN 4 // WS2812 pin number
+#define PIN_WALL 12 // window wall pin
+#define GARL 195
 #define STAR 11
-#define LEDS 210  // number of LEDs in the strip.
+#define WALL 401
+#define LEDS (GARL + STAR + WALL)  // number of LEDs in the strip.
+
 #define BRIGHTNESS 255// brightness adjustment, up to 255
 #define STARBRIGHTNESS 200
+#define WALLBRIGHTNESS 200
 
 #define ANIMS 9 //number of animations
 #define PALS 8 //number of palettes
 #define PALCUSTOM_ID 7
 #define ANIM_FILL_ID 100
 
-#define TRANSITION_MS 1000 // transition time between animations, ms
+#define TRANSITION_MS 500 // transition time between animations, ms
 
 // brigthness animation amplitude shift. true BrA amplitude is calculated as (0..127) value shifted right by this amount
 #define BRA_AMP_SHIFT 1
@@ -66,6 +70,7 @@ class Anim {
     Color sparkleColor = Color(0xFFFFFF);
 
     static byte seq[LEDS];
+    static uint16 positions[LEDS];
 
     //brigthness animation (BrA) current initial phase
     byte braPhase;

@@ -1,20 +1,20 @@
 #include "anim.h"
 
-void AnimSparkrGrad_initSeq(byte * seq)
+void AnimSparkrGrad_initPositions(uint16 * positions)
 {
     for (int i=0; i<LEDS; i++) {
-        seq[i] = i;
+        positions[i] = i;
     }
 }
 
-void AnimSparkrGrad_shuffleSeq(byte * seq) 
+void AnimSparkrGrad_shufflePositions(uint16 * positions) 
 {
     for (int i=0; i<LEDS; i++) {
-        byte ind = (unsigned int) ( rngb() * LEDS / 256);
+        uint16 ind = (uint16)(rngb() * LEDS / 256);
         if (ind != i) {
-            byte tmp = seq[ind];
-            seq[ind] = seq[i];
-            seq[i] = tmp;
+            uint16 tmp = positions[ind];
+            positions[ind] = positions[i];
+            positions[i] = tmp;
         }
     } 
 }
@@ -25,13 +25,13 @@ void Anim::animSparkrGrad_SetUp() {
     curColorOffset = 0,5;
     prevColorOffset = 0;
     palCut = random(1,4);
-    AnimSparkrGrad_initSeq(seq);
-    AnimSparkrGrad_shuffleSeq(seq);
+    AnimSparkrGrad_initPositions(positions);
+    AnimSparkrGrad_shufflePositions(positions);
 }
 
 void Anim::animSparkrGrad_Run() {
     for (int i=0;i<LEDS;i++) {
-        byte pos = seq[i];
+        int pos = positions[i];
 
         leds[pos] = (i > phase)
             ? GetGradientColor(pos, prevColorOffset, palCut) 
@@ -52,6 +52,6 @@ void Anim::animSparkrGrad_Run() {
         phase = 0;
         prevColorOffset = curColorOffset;
         curColorOffset = (float)rngb()/256;
-        AnimSparkrGrad_shuffleSeq(seq);
+        AnimSparkrGrad_shufflePositions(positions);
     }
 }

@@ -2,7 +2,7 @@
 #include "color.h"
 #include "palette.h"
 
-#define SPREAD_MAX_WIDTH 20
+#define SPREAD_MAX_WIDTH 50
 
 void Anim::animSpread_SetUp() {
     inc = random(2,8);
@@ -14,7 +14,7 @@ void Anim::animSpread_Run() {
 
     for (int i=0;i<LEDS;i++) {
         if (seq[i] > 0) {
-            byte width = SPREAD_MAX_WIDTH - seq[i];
+            int width = SPREAD_MAX_WIDTH - seq[i];
             for (int j=i-width;j<=(i+width);j++) {
                 Color c = ledstmp[i];
                 if (j>=0 && j<LEDS) {
@@ -29,7 +29,7 @@ void Anim::animSpread_Run() {
     }
 
     if (random(inc) == 0) {
-        byte pos = random(0,LEDS); 
+        int pos = random(0,LEDS); 
         ledstmp[pos] = palette->getPalColor((float)rngb()/256);
         seq[pos] = SPREAD_MAX_WIDTH;
     }        
