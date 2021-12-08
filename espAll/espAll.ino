@@ -8,11 +8,15 @@ extern Anim anim;
 
 void setup() {
   Serial.begin(115200);         // Start the Serial communication to send messages to the computer
+#ifdef DEBUG
+  uart_set_debug(UART0);
+#endif
+
   delay(10);
   WiFi.mode(WIFI_STA);
   WiFi.begin("HUAWEI-42", "123asdqwe");
 
-  SPIFFS.begin(); 
+  SPIFFS.begin();
   AnimSetup();
   WebServerSetup();
 #ifdef DEBUG

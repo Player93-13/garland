@@ -9,6 +9,10 @@ String JSONpalFile = "/pallete.json";
 extern Anim anim;
 extern Palette PalCustom;
 extern Color PalCustom_ [];
+extern uint8_t wallBytes [];
+extern bool wallBytesReady;
+extern bool runWallVideo;
+
 AsyncWebServer server(80);    // Create a webserver object that listens for HTTP request on port 80
 AsyncWebSocket ws("/ws");
 
@@ -18,6 +22,7 @@ void handleDelPal(AsyncWebServerRequest *request);
 void addNePalToFile(long id, String palName, String colors);
 void deletePal(int id);
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
+void wsRunColor(uint8_t *payload);
 
 void WebServerSetup()
 {
@@ -65,45 +70,91 @@ void hex2bin(const char* src, byte* target)
   }
 }
 
-void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *payload, size_t len)
-{
-  switch (type) {
-    case WS_EVT_DISCONNECT:
-#ifdef DEBUG
-      Serial.printf("[%u] Disconnected!\n", num);
-#endif
-      break;
-    case WS_EVT_CONNECT:
-      {
-        client->printf("Hello Client %u :)", client->id());
-        client->ping();
+void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len) {
+  if(type == WS_EVT_CONNECT){
+    //client connected
+    os_printf("ws[%s][%u] connect\n", server->url(), client->id());
+    client->printf("Hello Client %u :)", client->id());
+    client->ping();
+  } else if(type == WS_EVT_DISCONNECT){
+    //client disconnected
+    os_printf("ws[%s][%u] disconnect: %u\n", server->url(), client->id());
+  } else if(type == WS_EVT_ERROR){
+    //error was received from the other end
+    os_printf("ws[%s][%u] error(%u): %s\n", server->url(), client->id(), *((uint16_t*)arg), (char*)data);
+  } else if(type == WS_EVT_PONG){
+    //pong message was received (in response to a ping request maybe)
+    os_printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
+  } else if(type == WS_EVT_DATA){
+    //data packet
+    AwsFrameInfo * info = (AwsFrameInfo*)arg;
+    if(info->final && info->index == 0 && info->len == len){
+      //the whole message is in a single frame and we got all of it's data
+      os_printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
+      if(info->opcode == WS_TEXT){
+        data[len] = 0;
+        os_printf("%s\n", (char*)data);
+        if(data[0] = 'C')
+          wsRunColor(data);
+      } else {
+        for(size_t i=0; i < info->len; i++){
+          os_printf("%02x ", data[i]);
+        }
+        os_printf("\n");
       }
-      break;
-    case WS_EVT_DATA:
-#ifdef DEBUG
-      Serial.printf("[%u] get Text: %s\n", client->id(), payload);
-#endif
-      char str[6];
-      for (int i = 0; i < 6; i++)
-      {
-        str[i] = payload[i + 1];
+      if(info->opcode == WS_TEXT)
+        client->text("I got your text message");
+      else
+        client->binary("I got your binary message");
+    } else {
+      //message is comprised of multiple frames or the frame is split into multiple packets
+      if(info->index == 0){
+        if(info->num == 0)
+          os_printf("ws[%s][%u] %s-message start\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
+        os_printf("ws[%s][%u] frame[%u] start[%llu]\n", server->url(), client->id(), info->num, info->len);
       }
-      byte color[3];
-      hex2bin(str, color);
 
-      Color _c;
-      _c.r = color[0];
-      _c.g = color[1];
-      _c.b = color[2];
+      os_printf("ws[%s][%u] frame[%u] %s[%llu - %llu]: ", server->url(), client->id(), info->num, (info->message_opcode == WS_TEXT)?"text":"binary", info->index, info->index + len);
+      if(info->message_opcode == WS_TEXT){
+        data[len] = 0;
+        os_printf("%s\n", (char*)data);
+      } else {
+        if(info->index < WALL_WIDTH * WALL_HEIGHT * 3 + 1)
+          memcpy(&wallBytes[info->index], data, len);
+      }
 
-      PalCustom.numColors = 1;
-      PalCustom_[0] = _c;
-      
-      anim.setAnim(ANIM_FILL_ID);
-      anim.setPaletteById(PALCUSTOM_ID);
-      
-      break;
+      if((info->index + len) == info->len){
+        os_printf("ws[%s][%u] frame[%u] end[%llu]\n", server->url(), client->id(), info->num, info->len);
+        if(info->final){
+          os_printf("ws[%s][%u] %s-message end\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
+          if(info->message_opcode != WS_TEXT)
+            wallBytesReady = true;
+        }
+      }
+    }
   }
+}
+
+void wsRunColor(uint8_t *payload)
+{
+  char str[6];
+  for (int i = 0; i < 6; i++)
+  {
+    str[i] = payload[i + 1];
+  }
+  byte color[3];
+  hex2bin(str, color);
+
+  Color _c;
+  _c.r = color[0];
+  _c.g = color[1];
+  _c.b = color[2];
+
+  PalCustom.numColors = 1;
+  PalCustom_[0] = _c;
+
+  anim.setAnim(ANIM_FILL_ID);
+  anim.setPaletteById(PALCUSTOM_ID);
 }
 
 void handleSendCommand(AsyncWebServerRequest *request)

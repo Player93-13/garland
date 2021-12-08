@@ -1,18 +1,18 @@
 #include "anim.h"
 
-void AnimSparkrGrad_initPositions(uint16 * positions)
+void AnimSparkrGrad_initPositions(uint16_t * positions)
 {
     for (int i=0; i<LEDS; i++) {
         positions[i] = i;
     }
 }
 
-void AnimSparkrGrad_shufflePositions(uint16 * positions) 
+void AnimSparkrGrad_shufflePositions(uint16_t * positions) 
 {
     for (int i=0; i<LEDS; i++) {
-        uint16 ind = (uint16)(rngb() * LEDS / 256);
+        uint16_t ind = (uint16_t)(rngb() * LEDS / 256);
         if (ind != i) {
-            uint16 tmp = positions[ind];
+            uint16_t tmp = positions[ind];
             positions[ind] = positions[i];
             positions[i] = tmp;
         }

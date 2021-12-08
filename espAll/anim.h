@@ -7,16 +7,20 @@
 #define PIN_WALL 12 // window wall pin
 #define GARL 195
 #define STAR 11
-#define WALL 401
+#define WALL_WIDTH 16
+#define WALL_HEIGHT 25
+#define WALL (WALL_WIDTH * WALL_HEIGHT + 1)
+#define WALL_OFFSET (GARL + STAR + 1)
 #define LEDS (GARL + STAR + WALL)  // number of LEDs in the strip.
 
 #define BRIGHTNESS 255// brightness adjustment, up to 255
-#define STARBRIGHTNESS 200
-#define WALLBRIGHTNESS 200
+#define STARBRIGHTNESS 215
+#define WALLBRIGHTNESS 215
 
 #define ANIMS 9 //number of animations
 #define PALS 8 //number of palettes
 #define PALCUSTOM_ID 7
+#define ANIM_VIDEO_ID 99
 #define ANIM_FILL_ID 100
 
 #define TRANSITION_MS 500 // transition time between animations, ms
@@ -37,7 +41,7 @@ class Anim {
     static Color leds2[LEDS];
     //auxiliary colors array
     static Color ledstmp[LEDS];
-
+    
     void animStart();
 
     // length of animation timeslot (period)
@@ -70,7 +74,7 @@ class Anim {
     Color sparkleColor = Color(0xFFFFFF);
 
     static byte seq[LEDS];
-    static uint16 positions[LEDS];
+    static uint16_t positions[LEDS];
 
     //brigthness animation (BrA) current initial phase
     byte braPhase;
@@ -137,11 +141,12 @@ class Anim {
     void animFill_SetUp();
     void animFill_Run();
 
+    void animVideo_SetUp();
+    void animVideo_Run();
+
     Color GetGradientColor(int pos, float colorOffset, int paletteCut);
 
   public:
-
-
     Anim();
     void setPeriod(byte period);
     void setPalette(Palette * pal);
@@ -150,8 +155,7 @@ class Anim {
     bool run();//returns true if actual change has completed, or false if it's dummy call (previous call was too recent in time)
     void doSetUp();
 
-   
-
+    Color getMatrix(int i, int j);
 };
 
 unsigned int rng();

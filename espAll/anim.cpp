@@ -10,6 +10,14 @@ Adafruit_NeoPixel pixels_wall = Adafruit_NeoPixel(WALL, PIN_WALL, NEO_GRB + NEO_
 Color PalCustom_ [64];
 Palette PalCustom = { 1, PalCustom_ };
 
+Color *leds;
+
+//video
+uint8_t wallBytes[WALL * 3];
+Color (*matrix)[WALL_WIDTH][WALL_HEIGHT] = (Color (*)[WALL_WIDTH][WALL_HEIGHT]) wallBytes;
+bool wallBytesReady = false;
+bool runWallVideo = false;
+
 Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &PalHeat, &PalFire, &PalIceBlue, &PalCustom};
 
 Anim::Anim()
@@ -26,7 +34,7 @@ void Anim::setPalette(Palette * pal) {
   if (setUpOnPalChange) {
     setUp();
   }
-  pinMode(LED_BUILTIN, OUTPUT);
+  //pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void Anim::setPaletteById(int id)
@@ -36,16 +44,20 @@ void Anim::setPaletteById(int id)
 
 bool Anim::run()
 {
-  if ( millis() <= nextms || off) {
+  if ( millis() <= nextms || off || (runWallVideo && !wallBytesReady)) {
     //digitalWrite(LED_BUILTIN, LOW);
     return false;
   }
   //digitalWrite(LED_BUILTIN, HIGH);
-  nextms = millis() + period;
+  nextms = millis() + (runWallVideo ? 0 : period);
 
   if (runImpl != NULL)
   {
     (this->*runImpl)();
+  }
+
+  if(runWallVideo) {
+    wallBytesReady = false;
   }
 
   //transition coef, if within 0..1 - transition is active
@@ -58,11 +70,11 @@ bool Anim::run()
   for (int i = 0; i < LEDS; i++)
   {
     Color c = leds[i];
-    
-    if (tran)  //transition is in progress
-      c = c.interpolate(leds_prev[i], transc);     
 
-    c.setbrightness(i < GARL ? BRIGHTNESS : STARBRIGHTNESS);
+    if (tran)  //transition is in progress
+      c = c.interpolate(leds_prev[i], transc);
+
+    c.setbrightness(i < GARL ? BRIGHTNESS : i < GARL + STAR ? STARBRIGHTNESS : WALLBRIGHTNESS);
     c.gammaCorrection();
 
     if (i < GARL)
@@ -70,7 +82,9 @@ bool Anim::run()
     else if (i >= GARL && i < STAR + GARL)
       pixels.setPixelColor((STAR + GARL) - (i - GARL) - 1, pixels.Color(c.g, c.r, c.b));
     else if (i >= STAR + GARL)
+    {
       pixels_wall.setPixelColor(i - (STAR + GARL), pixels.Color(c.r, c.g, c.b));
+    }
   }
 
   pixels.show();
@@ -107,7 +121,8 @@ void Anim::doSetUp()
 void Anim::setAnim(byte animInd)
 {
   off = false;
-  
+  runWallVideo = false;
+
   switch (animInd) {
     case 0:
       setUpImpl = &Anim::animRun_SetUp;
@@ -159,6 +174,12 @@ void Anim::setAnim(byte animInd)
       runImpl = &Anim::animFill_Run;
       setUpOnPalChange = true;
       break;
+    case ANIM_VIDEO_ID:
+      setUpImpl = &Anim::animVideo_SetUp;
+      runImpl = &Anim::animVideo_Run;
+      setUpOnPalChange = true;
+      runWallVideo = true;
+      break;
     default:
       setUpImpl = &Anim::animOff_SetUp;
       runImpl = &Anim::animOff_Run;
@@ -167,6 +188,10 @@ void Anim::setAnim(byte animInd)
   }
 }
 
+Color Anim::getMatrix(int i, int j)
+{
+  return (*matrix)[i][j];
+}
 
 
 unsigned int rng() {
@@ -185,7 +210,7 @@ Color Anim::GetGradientColor(int pos, float colorOffset, int paletteCut)
   float x = ((float)pos / LEDS / paletteCut) + colorOffset;
   if (x >= 1)
     x--;
-    
+
   return palette->getPalColor(x);
 }
 

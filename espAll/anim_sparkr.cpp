@@ -1,18 +1,18 @@
 #include "anim.h"
 
-void AnimSparkr_initPositions(uint16 * positions)
+void AnimSparkr_initPositions(uint16_t * positions)
 {
     for (int i=0; i<LEDS; i++) {
         positions[i] = i;
     }
 }
 
-void AnimSparkr_shufflePositions(uint16 * positions) 
+void AnimSparkr_shufflePositions(uint16_t * positions) 
 {
     for (int i=0; i<LEDS; i++) {
-        uint16 ind = (uint16)(rngb() * LEDS / 256);
+        uint16_t ind = (uint16_t)(rngb() * LEDS / 256);
         if (ind != i) {
-            uint16 tmp = positions[ind];
+            uint16_t tmp = positions[ind];
             positions[ind] = positions[i];
             positions[i] = tmp;
         }
@@ -30,19 +30,33 @@ void Anim::animSparkr_SetUp() {
 
 void Anim::animSparkr_Run() {
     for (int i=0;i<LEDS;i++) {
-        uint16 pos = positions[i];
+        uint16_t pos = positions[i];
 
-        leds[pos] = (i > phase)
-            ? prevColor 
-            : (i > (phase - 2)) ? sparkleColor : curColor;
-        glowForEachLed(pos);
+        if(i > phase)
+        {
+          leds[pos] = prevColor;
+          glowForEachLed(pos);
+        } 
+        else if(i > (phase - 2))
+        {
+          leds[pos] = sparkleColor;
+        } 
+        else
+        {
+          leds[pos] = curColor;
+          glowForEachLed(pos);
+        }
     }
     glowRun();
 
     if (phase > LEDS) {
         if (random(SPARK_PROB) == 0) {
-            int i = (int)rngb() * LEDS / 256;
-            leds[i] = sparkleColor;
+          int n = LEDS / 256 + 1;
+          for(int i = 0; i < n; i++)
+          {
+            int k = (int)rngb() * LEDS / 256;
+            leds[k] = sparkleColor;
+          }
         }    
     }
 
