@@ -33,17 +33,17 @@ static int GarlandRounds[GARL_N] = { 22, 20, 18, 17, 15, 13, 10, 8, 6, 5, 4 };
 static Point Garland[GARL];
 static Point Star[STAR] =
 {
-  Point(3, 4),
-  Point(3, 1),
-  Point(1, 0),
-  Point(0, 1),
-  Point(0, 4),
-  Point(2, 3),
-  Point(2, 1),
-  Point(1, 1),
-  Point(1, 2),
+  Point(2, 2),
   Point(1, 3),
-  Point(2, 2)
+  Point(1, 2),
+  Point(1, 1),
+  Point(2, 1),
+  Point(2, 3),
+  Point(0, 4),
+  Point(0, 1),
+  Point(1, 0),
+  Point(3, 1),
+  Point(3, 4)
 };
 
 // расчет транспонирования края занавеса на елку
