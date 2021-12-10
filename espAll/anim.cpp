@@ -2,6 +2,9 @@
 #include "color.h"
 #include "palette.h"
 #include "anim.h"
+#include "config.h"
+
+extern LastState State;
 
 //Adafruit's class to operate strip
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(GARL + STAR, PIN, NEO_GRB + NEO_KHZ800);
@@ -220,9 +223,10 @@ void AnimSetup()
 {
   pixels.begin();
   pixels_wall.begin();
-  anim.setAnim(-1);
+  LoadConfig();
+  anim.setAnim(State.animId);
+  anim.setPaletteById(State.palId);
   anim.setPeriod(20);
-  anim.setPalette(pals[0]);
   anim.doSetUp();
 }
 

@@ -17,11 +17,11 @@ void setup() {
   WiFi.begin("HUAWEI-42", "123asdqwe");
 
   SPIFFS.begin();
-  AnimSetup();
   WebServerSetup();
 #ifdef DEBUG
   Serial.println("webSocket server started");
 #endif
+  AnimSetup();
 }
 
 void loop(void) {
