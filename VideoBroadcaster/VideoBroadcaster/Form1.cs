@@ -33,7 +33,7 @@ namespace VideoBroadcaster
         const int width = out_display_width * 20;
         const int height = out_display_height * 20;
 
-        private Rectangle _rec = new(0, 0, width, height);
+        private Rectangle _rec = new(600, 0, width, height);
         protected bool Runing = true;
         protected Task DrawTask = Task.Delay(0);
         int _frame = 0;
@@ -195,6 +195,7 @@ namespace VideoBroadcaster
             _frame = 0;
             label5.Text = _totalframes.ToString();
             label6.Text = _missedFrames.ToString();
+            label8.Text = WS.State.ToString();
         }
 
         private async void button2_Click(object sender, EventArgs e)
