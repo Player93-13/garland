@@ -84,7 +84,13 @@ namespace VideoBroadcaster
                     }
                     else
                     {
-                        _missedFrames++;
+                        if (_missedFrames++ > 100)
+                        {
+                            WS.Dispose();
+                            WS = new ClientWebSocket();
+                            await WS.ConnectAsync(new Uri("ws://192.168.3.16/ws"), CancellationToken.None);
+                            _missedFrames = 0;
+                        }
                     }
                 }
 
