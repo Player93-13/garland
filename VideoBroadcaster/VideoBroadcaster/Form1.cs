@@ -88,7 +88,7 @@ namespace VideoBroadcaster
                         {
                             WS.Dispose();
                             WS = new ClientWebSocket();
-                            await WS.ConnectAsync(new Uri("ws://192.168.3.16/ws"), CancellationToken.None);
+                            await WS.ConnectAsync(new Uri("ws://192.168.3.7/ws"), CancellationToken.None);
                             _missedFrames = 0;
                         }
                     }
@@ -208,7 +208,7 @@ namespace VideoBroadcaster
         {
             if (!WSconnected)
             {
-                await WS.ConnectAsync(new Uri("ws://192.168.3.16/ws"), CancellationToken.None);
+                await WS.ConnectAsync(new Uri("ws://192.168.3.7/ws"), CancellationToken.None);
                 WSconnected = true;
                 button2.Text = "disconnect";
             }

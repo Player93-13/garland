@@ -1,3 +1,7 @@
+#ifdef ESP32
+#include <FS.h>
+#include <SPIFFS.h>
+#endif
 #include <ArduinoJson.h>
 #include "FS.h"
 #include "config.h"

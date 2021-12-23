@@ -234,4 +234,4 @@ Color Anim::leds1[LEDS];
 Color Anim::leds2[LEDS];
 Color Anim::ledstmp[LEDS];
 byte Anim::seq[LEDS];
-uint16 Anim::positions[LEDS];
+uint16_t Anim::positions[LEDS];
