@@ -22,8 +22,8 @@ void AnimSparkr_shufflePositions(uint16_t * positions)
 void Anim::animSparkr_SetUp() {
     glowSetUp();
     phase = 0;
-    curColor = palette->getPalColor((float)rngb()/256);
-    prevColor = palette->getPalColor((float)rngb()/256);
+    curColor = palette->getPalColor(rngb());
+    prevColor = palette->getPalColor(rngb());
     AnimSparkr_initPositions(positions);
     AnimSparkr_shufflePositions(positions);
 }
@@ -66,7 +66,7 @@ void Anim::animSparkr_Run() {
         prevColor = curColor;
         byte x = 0;
         while (prevColor.isCloseTo(curColor) && x++ < 50) { 
-          curColor = palette->getPalColor((float)rngb()/256);     
+          curColor = palette->getPalColor(rngb());     
         }
         AnimSparkr_shufflePositions(positions);
     }

@@ -15,10 +15,10 @@ namespace VideoBroadcaster
             pictureBox1.Height = height;
 
             gr_result.CompositingMode = CompositingMode.SourceCopy;
-            gr_result.CompositingQuality = CompositingQuality.HighQuality;
-            gr_result.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            gr_result.SmoothingMode = SmoothingMode.HighQuality;
-            gr_result.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            gr_result.CompositingQuality = CompositingQuality.HighSpeed;
+            gr_result.InterpolationMode = InterpolationMode.Low;
+            gr_result.SmoothingMode = SmoothingMode.HighSpeed;
+            gr_result.PixelOffsetMode = PixelOffsetMode.HighSpeed;
         }
 
         static Bitmap result_btmp = new(out_display_width, out_display_height);
@@ -88,7 +88,7 @@ namespace VideoBroadcaster
                         {
                             WS.Dispose();
                             WS = new ClientWebSocket();
-                            await WS.ConnectAsync(new Uri("ws://192.168.3.7/ws"), CancellationToken.None);
+                            await WS.ConnectAsync(new Uri("ws://192.168.3.16/ws"), CancellationToken.None);
                             _missedFrames = 0;
                         }
                     }
@@ -208,7 +208,7 @@ namespace VideoBroadcaster
         {
             if (!WSconnected)
             {
-                await WS.ConnectAsync(new Uri("ws://192.168.3.7/ws"), CancellationToken.None);
+                await WS.ConnectAsync(new Uri("ws://192.168.3.16/ws"), CancellationToken.None);
                 WSconnected = true;
                 button2.Text = "disconnect";
             }

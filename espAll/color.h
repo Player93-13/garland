@@ -30,13 +30,11 @@ struct Color
   {
   }
 
-  //interpolates between this color and provided.
-  //x is from 0 to 1, 0 gives this color, 1 gives provided color, values between give interpolation
-  Color interpolate(Color color, float x)
+  Color interpolate(Color color, uint8_t x)
   {
-    int r0 = x * (color.r - r) + r;
-    int g0 = x * (color.g - g) + g;
-    int b0 = x * (color.b - b) + b;
+    int r0 = (int)x * (color.r - r) / 255 + r;
+    int g0 = (int)x * (color.g - g) / 255 + g;
+    int b0 = (int)x * (color.b - b) / 255 + b;
     return Color(r0, g0, b0);
   }
 

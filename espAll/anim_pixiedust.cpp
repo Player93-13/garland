@@ -5,8 +5,8 @@
 #define DUST_LENGTH 20
 void Anim::animPixieDust_SetUp() {
     phase = 0;
-    curColor = palette->getPalColor((float)rng()/256);
-    prevColor = palette->getPalColor((float)rng()/256);
+    curColor = palette->getPalColor(rngb());
+    prevColor = palette->getPalColor(rngb());
     inc = random(2)*2-1;
     if (inc > 0) {
         phase = -DUST_LENGTH/2;
@@ -27,7 +27,7 @@ void Anim::animPixieDust_Run() {
         if (phase >= 4*LEDS) {
             phase = -DUST_LENGTH/2;
             prevColor = curColor;
-            curColor = palette->getPalColor((float)rngb()/256);     
+            curColor = palette->getPalColor(rngb());     
         }
     } else {
         for (int i=0;i<LEDS;i++) {
@@ -41,7 +41,7 @@ void Anim::animPixieDust_Run() {
             byte x = 0;
             while (prevColor.isCloseTo(curColor) && x++ < 50) 
             { 
-              curColor = palette->getPalColor((float)rngb()/256);     
+              curColor = palette->getPalColor(rngb());     
             }
         }
     }
@@ -55,7 +55,7 @@ void Anim::animPixieDust_Run() {
             } else if (mix > 255) {
                 mix = 255;
             }
-            leds[k] = sparkleColor.interpolate(leds[k], (float)mix/255);
+            leds[k] = sparkleColor.interpolate(leds[k], mix);
         }
     }
     

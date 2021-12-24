@@ -30,7 +30,7 @@ void Anim::animFly_Run() {
     }
 
     if (random(abs(inc)) == 0) {
-        curColor = palette->getPalColor((float)rngb()/256);
+        curColor = palette->getPalColor(rngb());
         phase = pos;
     }
 

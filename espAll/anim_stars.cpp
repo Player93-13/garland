@@ -35,7 +35,7 @@ void Anim::animStars_Run() {
         int pos = random(LEDS);
         if (seq[pos] > 250) {
             seq[pos] = 0;
-            ledstmp[pos] = palette->getPalColor((float)rngb()/256);
+            ledstmp[pos] = palette->getPalColor(rngb());
         }
     }
 }

@@ -6,24 +6,19 @@
 
 struct Palette
 {
-    int numColors;
-    Color *colors;
-    
-    /**
-    * Get the interpolated color from the palette.
-    * The argument is a floating number between 0 and 1
-    */
-    Color getPalColor(float i)
-    {
-        int i0 = (int)(i*numColors)%(numColors);
-        int i1 = (int)(i*numColors+1)%(numColors);
-        
-        // decimal part is used to interpolate between the two colors
-        float t0 = i*numColors - trunc(i*numColors);
+  int numColors;
+  Color *colors;
 
-        return colors[i0].interpolate(colors[i1], t0);
-    }
-       
+  Color getPalColor(uint8_t i)
+  {
+    int k = ((int)i * numColors) >> 8;
+    int i0 = (k) % (numColors);
+    int i1 = (k + 1) % (numColors);
+
+    uint8_t t0 = (numColors * i) - (i0 << 8);
+
+    return colors[i0].interpolate(colors[i1], t0);
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////

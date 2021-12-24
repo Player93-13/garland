@@ -21,11 +21,17 @@ Color (*matrix)[WALL_WIDTH][WALL_HEIGHT] = (Color (*)[WALL_WIDTH][WALL_HEIGHT]) 
 bool wallBytesReady = false;
 bool runWallVideo = false;
 
+uint16_t frames = 0;
+unsigned long secTime;
+
 Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &PalHeat, &PalFire, &PalIceBlue, &PalCustom};
 
 Anim::Anim()
 {
   nextms = millis();
+#ifdef DEBUG
+  secTime = nextms;
+#endif
 }
 
 void Anim::setPeriod(byte period) {
@@ -48,24 +54,33 @@ void Anim::setPaletteById(int id)
 bool Anim::run()
 {
   if ( millis() <= nextms || off || (runWallVideo && !wallBytesReady)) {
-    //digitalWrite(LED_BUILTIN, LOW);
     return false;
   }
-  //digitalWrite(LED_BUILTIN, HIGH);
+
   nextms = millis() + (runWallVideo ? 0 : period);
+
+#ifdef DEBUG
+  if (secTime < millis())
+  {
+    Serial.println(frames);
+    frames = 0;
+    secTime += 1000;
+  }
+  frames++;
+#endif
 
   if (runImpl != NULL)
   {
     (this->*runImpl)();
   }
 
-  if(runWallVideo) {
+  if (runWallVideo) {
     wallBytesReady = false;
   }
 
-  //transition coef, if within 0..1 - transition is active
+  //transition coef, if within 0..255 - transition is active
   //changes from 1 to 0 during transition, so we interpolate from current color to previous
-  float transc = (float)((long)transms - (long)millis()) / TRANSITION_MS;
+  int transc = ((long)transms - (long)millis()) * 255 / TRANSITION_MS;
   Color * leds_prev = (leds == leds1) ? leds2 : leds1;
 
   bool tran = transc > 0;
@@ -75,7 +90,9 @@ bool Anim::run()
     Color c = leds[i];
 
     if (tran)  //transition is in progress
+    {
       c = c.interpolate(leds_prev[i], transc);
+    }
 
     c.setbrightness(i < GARL ? BRIGHTNESS : i < GARL + STAR ? STARBRIGHTNESS : WALLBRIGHTNESS);
     c.gammaCorrection();
@@ -208,11 +225,9 @@ byte rngb() {
   return (byte)rng();
 }
 
-Color Anim::GetGradientColor(int pos, float colorOffset, int paletteCut)
+Color Anim::GetGradientColor(int pos, uint8_t colorOffset, int paletteCut)
 {
-  float x = ((float)pos / LEDS / paletteCut) + colorOffset;
-  if (x >= 1)
-    x--;
+  uint8_t x = ((256 * pos / LEDS / paletteCut) + colorOffset) % 256;
 
   return palette->getPalColor(x);
 }

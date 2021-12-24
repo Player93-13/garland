@@ -68,8 +68,8 @@ class Anim {
 
     Color curColor = Color(0);
     Color prevColor = Color(0);
-    float curColorOffset = 127;
-    float prevColorOffset = 0;
+    uint8_t curColorOffset = 127;
+    uint8_t prevColorOffset = 0;
 
     Color sparkleColor = Color(0xFFFFFF);
 
@@ -144,7 +144,7 @@ class Anim {
     void animVideo_SetUp();
     void animVideo_Run();
 
-    Color GetGradientColor(int pos, float colorOffset, int paletteCut);
+    Color GetGradientColor(int pos, uint8_t colorOffset, int paletteCut);
 
   public:
     Anim();

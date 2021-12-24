@@ -30,7 +30,7 @@ void Anim::animSpread_Run() {
 
     if (random(inc) == 0) {
         int pos = random(0,LEDS); 
-        ledstmp[pos] = palette->getPalColor((float)rngb()/256);
+        ledstmp[pos] = palette->getPalColor(rngb());
         seq[pos] = SPREAD_MAX_WIDTH;
     }        
 }

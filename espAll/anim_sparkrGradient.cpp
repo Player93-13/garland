@@ -22,7 +22,7 @@ void AnimSparkrGrad_shufflePositions(uint16_t * positions)
 void Anim::animSparkrGrad_SetUp() {
     glowSetUp();
     phase = 0;
-    curColorOffset = 0,5;
+    curColorOffset = 127;
     prevColorOffset = 0;
     palCut = random(1,4);
     AnimSparkrGrad_initPositions(positions);
@@ -51,7 +51,7 @@ void Anim::animSparkrGrad_Run() {
     if (phase > 2*LEDS) {
         phase = 0;
         prevColorOffset = curColorOffset;
-        curColorOffset = (float)rngb()/256;
+        curColorOffset = rngb();
         AnimSparkrGrad_shufflePositions(positions);
     }
 }

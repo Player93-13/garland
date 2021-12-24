@@ -13,7 +13,7 @@ void Anim::animRandCycGlow_SetUp()
 void Anim::animRandCycGlow_Run()
 {
   for (int i = 0; i < LEDS; i++) {
-    leds[i] = palette->getPalColor((float)seq[i] / 256);
+    leds[i] = palette->getPalColor(seq[i]);
     seq[i] += rngb() >> 6;
     glowForEachLed(i);
   }

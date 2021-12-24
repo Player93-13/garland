@@ -5,7 +5,7 @@
 #define DUST_LENGTH 20
 void Anim::animPixieDustGrad_SetUp() {
     phase = 0;
-    curColorOffset = 0,5;
+    curColorOffset = 128;
     prevColorOffset = 0;
     palCut = random(1,4);
     inc = random(2)*2-1;
@@ -39,7 +39,7 @@ void Anim::animPixieDustGrad_Run() {
         if (phase <= -3*LEDS) {
             phase = LEDS + DUST_LENGTH/2;
             prevColorOffset = curColorOffset;
-            curColorOffset = (float)rngb()/256;    
+            curColorOffset = rngb();    
         }
     }
     glowRun();
@@ -52,7 +52,7 @@ void Anim::animPixieDustGrad_Run() {
             } else if (mix > 255) {
                 mix = 255;
             }
-            leds[k] = sparkleColor.interpolate(leds[k], (float)mix/255);
+            leds[k] = sparkleColor.interpolate(leds[k], mix);
         }
     }
     
