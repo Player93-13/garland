@@ -15,10 +15,10 @@ namespace VideoBroadcaster
             pictureBox1.Height = height;
 
             gr_result.CompositingMode = CompositingMode.SourceCopy;
-            gr_result.CompositingQuality = CompositingQuality.HighSpeed;
-            gr_result.InterpolationMode = InterpolationMode.Low;
-            gr_result.SmoothingMode = SmoothingMode.HighSpeed;
-            gr_result.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+            gr_result.CompositingQuality = CompositingQuality.HighQuality;
+            gr_result.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            gr_result.SmoothingMode = SmoothingMode.HighQuality;
+            gr_result.PixelOffsetMode = PixelOffsetMode.HighQuality;
         }
 
         static Bitmap result_btmp = new(out_display_width, out_display_height);
@@ -119,7 +119,7 @@ namespace VideoBroadcaster
         {
             byte[] result = new byte[img.Height * img.Width * 3];
             int k = 0;
-            for (int i = 0; i < img.Width; i++)
+            for (int i = img.Width - 1; i >= 0; i--)
             {
                 for (int j = 0; j < img.Height; j++)
                 {

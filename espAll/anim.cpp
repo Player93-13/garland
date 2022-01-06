@@ -53,21 +53,21 @@ void Anim::setPaletteById(int id)
 
 bool Anim::run()
 {
-  if ( millis() <= nextms || off || (runWallVideo && !wallBytesReady)) {
+  if ( millis() < nextms || off || (runWallVideo && !wallBytesReady)) {
     return false;
   }
 
   nextms = millis() + (runWallVideo ? 0 : period);
 
-#ifdef DEBUG
   if (secTime < millis())
   {
     Serial.println(frames);
+    Serial.println(transms);
+    Serial.println(millis());
     frames = 0;
     secTime += 1000;
   }
   frames++;
-#endif
 
   if (runImpl != NULL)
   {
@@ -78,12 +78,15 @@ bool Anim::run()
     wallBytesReady = false;
   }
 
-  //transition coef, if within 0..255 - transition is active
-  //changes from 1 to 0 during transition, so we interpolate from current color to previous
-  int transc = ((long)transms - (long)millis()) * 255 / TRANSITION_MS;
+  int transc = 0;
+  bool tran = millis() < transms;
+  
+  if (tran)
+  {
+    transc = ((long)transms - (long)millis()) * 255 / TRANSITION_MS;
+  }
+  
   Color * leds_prev = (leds == leds1) ? leds2 : leds1;
-
-  bool tran = transc > 0;
 
   for (int i = 0; i < LEDS; i++)
   {

@@ -9,6 +9,6 @@ void Anim::animRandCyc_SetUp() {
 void Anim::animRandCyc_Run() {
   for (int i = 0; i < LEDS; i++) {
     leds[i] = palette->getPalColor(seq[i]);
-    seq[i] += rngb() >> 6;
+    seq[i] += ((rngb() >> 6) + 1);
   }
 }
