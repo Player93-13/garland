@@ -41,14 +41,23 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(338, 64);
+            this.button1.Location = new System.Drawing.Point(338, 164);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(152, 23);
+            this.button1.Size = new System.Drawing.Size(167, 23);
             this.button1.TabIndex = 0;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
@@ -88,7 +97,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(338, 121);
+            this.label1.Location = new System.Drawing.Point(6, 19);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(26, 15);
             this.label1.TabIndex = 4;
@@ -97,7 +106,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(430, 121);
+            this.label2.Location = new System.Drawing.Point(98, 19);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(13, 15);
             this.label2.TabIndex = 5;
@@ -105,9 +114,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(338, 93);
+            this.button2.Location = new System.Drawing.Point(338, 193);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(152, 23);
+            this.button2.Size = new System.Drawing.Size(167, 23);
             this.button2.TabIndex = 7;
             this.button2.Text = "connect";
             this.button2.UseVisualStyleBackColor = true;
@@ -116,7 +125,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(338, 136);
+            this.label3.Location = new System.Drawing.Point(6, 34);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(74, 15);
             this.label3.TabIndex = 8;
@@ -125,7 +134,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(338, 151);
+            this.label4.Location = new System.Drawing.Point(6, 49);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(86, 15);
             this.label4.TabIndex = 9;
@@ -134,7 +143,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(430, 136);
+            this.label5.Location = new System.Drawing.Point(98, 34);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(13, 15);
             this.label5.TabIndex = 10;
@@ -143,7 +152,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(430, 151);
+            this.label6.Location = new System.Drawing.Point(98, 49);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(13, 15);
             this.label6.TabIndex = 11;
@@ -152,7 +161,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(338, 166);
+            this.label7.Location = new System.Drawing.Point(6, 64);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(55, 15);
             this.label7.TabIndex = 12;
@@ -161,36 +170,113 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(338, 181);
+            this.label8.Location = new System.Drawing.Point(67, 64);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(12, 15);
             this.label8.TabIndex = 13;
             this.label8.Text = "-";
             // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(338, 64);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(166, 19);
+            this.checkBox3.TabIndex = 14;
+            this.checkBox3.Text = "Отразить по горизонтали";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // trackBar1
+            // 
+            this.trackBar1.AccessibleName = "";
+            this.trackBar1.Location = new System.Drawing.Point(338, 104);
+            this.trackBar1.Maximum = 255;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.RightToLeftLayout = true;
+            this.trackBar1.Size = new System.Drawing.Size(166, 45);
+            this.trackBar1.TabIndex = 15;
+            this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trackBar1.Value = 255;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(403, 86);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(25, 15);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "255";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(337, 138);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(24, 15);
+            this.label9.TabIndex = 19;
+            this.label9.Text = "url:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(363, 135);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(141, 23);
+            this.textBox1.TabIndex = 20;
+            this.textBox1.Text = "ws://192.168.3.16/ws";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Controls.Add(this.label2);
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.label4);
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Location = new System.Drawing.Point(338, 222);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(167, 88);
+            this.groupBox2.TabIndex = 21;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "status";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(343, 86);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(54, 15);
+            this.label11.TabIndex = 22;
+            this.label11.Text = "Яркость:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(503, 524);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
+            this.ClientSize = new System.Drawing.Size(510, 524);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.checkBox3);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.button1);
+            this.Controls.Add(this.trackBar1);
             this.KeyPreview = true;
             this.Name = "Form1";
             this.Text = "Form1";
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -211,5 +297,12 @@
         private Label label6;
         private Label label7;
         private Label label8;
+        private CheckBox checkBox3;
+        private TrackBar trackBar1;
+        private Label label10;
+        private Label label9;
+        private TextBox textBox1;
+        private GroupBox groupBox2;
+        private Label label11;
     }
 }

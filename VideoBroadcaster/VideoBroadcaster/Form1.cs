@@ -73,7 +73,7 @@ namespace VideoBroadcaster
                 //timer.Restart();
                 gr_source.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
                 gr_result.DrawImage(source, new Rectangle(0,0, out_display_width, out_display_height), 0, 0, source.Width, source.Height, GraphicsUnit.Pixel, wrapMode);
-                result_btmp_arr = ImageToByte(result_btmp);
+                result_btmp_arr = ImageToByte(result_btmp, checkBox3.Checked, trackBar1.Value, trackBar1.Maximum);
                 _frame++; _totalframes++;
 
                 if (WSconnected)
@@ -88,7 +88,7 @@ namespace VideoBroadcaster
                         {
                             WS.Dispose();
                             WS = new ClientWebSocket();
-                            await WS.ConnectAsync(new Uri("ws://192.168.3.16/ws"), CancellationToken.None);
+                            await WS.ConnectAsync(new Uri(textBox1.Text.Trim()), CancellationToken.None);
                             _missedFrames = 0;
                         }
                     }
@@ -115,18 +115,18 @@ namespace VideoBroadcaster
             }
         }
 
-        public static byte[] ImageToByte(Bitmap img)
+        public static byte[] ImageToByte(Bitmap img, bool flipHorizontally, int brightness, int maxBrightness)
         {
             byte[] result = new byte[img.Height * img.Width * 3];
             int k = 0;
-            for (int i = img.Width - 1; i >= 0; i--)
+            for (int i = 0; i < img.Width; i++)
             {
                 for (int j = 0; j < img.Height; j++)
                 {
-                    var c = img.GetPixel(i, j);
-                    result[k++] = c.R;
-                    result[k++] = c.G;
-                    result[k++] = c.B;
+                    var c = img.GetPixel(flipHorizontally ? img.Width - 1 - i : i, j);
+                    result[k++] = (byte)(brightness * c.R / maxBrightness);
+                    result[k++] = (byte)(brightness * c.G / maxBrightness);
+                    result[k++] = (byte)(brightness * c.B / maxBrightness);
                 }
             }
 
@@ -208,7 +208,7 @@ namespace VideoBroadcaster
         {
             if (!WSconnected)
             {
-                await WS.ConnectAsync(new Uri("ws://192.168.3.16/ws"), CancellationToken.None);
+                await WS.ConnectAsync(new Uri(textBox1.Text.Trim()), CancellationToken.None);
                 WSconnected = true;
                 button2.Text = "disconnect";
             }
@@ -219,6 +219,11 @@ namespace VideoBroadcaster
                 WSconnected = false;
                 button2.Text = "connect";
             }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            label10.Text = trackBar1.Value.ToString();
         }
     }
 }
