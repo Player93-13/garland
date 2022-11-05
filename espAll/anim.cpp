@@ -61,9 +61,12 @@ bool Anim::run()
 
   if (secTime < millis())
   {
+    Serial.print("fps: ");
     Serial.println(frames);
+    #ifdef DEBUG
     Serial.println(transms);
     Serial.println(millis());
+    #endif
     frames = 0;
     secTime += 1000;
   }
