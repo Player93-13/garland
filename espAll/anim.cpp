@@ -80,12 +80,12 @@ bool Anim::run()
 
   int transc = 0;
   bool tran = millis() < transms;
-  
+
   if (tran)
   {
     transc = ((long)transms - (long)millis()) * 255 / TRANSITION_MS;
   }
-  
+
   Color * leds_prev = (leds == leds1) ? leds2 : leds1;
 
   for (int i = 0; i < LEDS; i++)
@@ -98,7 +98,9 @@ bool Anim::run()
     }
 
     c.setbrightness(i < GARL ? BRIGHTNESS : i < GARL + STAR ? STARBRIGHTNESS : WALLBRIGHTNESS);
-    c.gammaCorrection();
+    if (!runWallVideo) {
+      c.gammaCorrection();
+    }
 
     if (i < GARL)
       pixels.setPixelColor(i, pixels.Color(c.r, c.g, c.b));
@@ -106,6 +108,9 @@ bool Anim::run()
       pixels.setPixelColor((STAR + GARL) - (i - GARL) - 1, pixels.Color(c.g, c.r, c.b));
     else if (i >= STAR + GARL)
     {
+      if (!runWallVideo) {
+        c.setbrightness(WALLBRIGHTNESS);
+      }
       pixels_wall.setPixelColor(i - (STAR + GARL), pixels.Color(c.r, c.g, c.b));
     }
   }
