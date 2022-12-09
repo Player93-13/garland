@@ -8,7 +8,7 @@ void Anim::animOff_SetUp() {
 }
 
 void Anim::animOff_Run() {
-    if(inc++ > 1000)
+    if(inc++ > 500)
     {
       off = true;
     }

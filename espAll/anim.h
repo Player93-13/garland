@@ -3,9 +3,10 @@
 #include <Adafruit_NeoPixel.h>
 #include "palette.h"
 
-#define PIN 4 // WS2812 pin number
-#define PIN_WALL 12 // window wall pin
-#define GARL 195
+#define PIN 5 // WS2812 pin number
+#define PIN_WALL 4 // window wall pin
+#define PIN_PS_ON 12 // power switch
+#define GARL 494
 #define STAR 11
 #define WALL_WIDTH 16
 #define WALL_HEIGHT 25

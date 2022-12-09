@@ -53,6 +53,14 @@ void Anim::setPaletteById(int id)
 
 bool Anim::run()
 {
+  if (off) {
+    digitalWrite(PIN_PS_ON, HIGH);
+    return false;
+  }
+  else {
+    digitalWrite(PIN_PS_ON, LOW);
+  }
+  
   if ( millis() < nextms || off || (runWallVideo && !wallBytesReady)) {
     return false;
   }
@@ -100,7 +108,7 @@ bool Anim::run()
       c = c.interpolate(leds_prev[i], transc);
     }
 
-    c.setbrightness(i < GARL ? BRIGHTNESS : i < GARL + STAR ? STARBRIGHTNESS : WALLBRIGHTNESS);
+    //c.setbrightness(i < GARL ? BRIGHTNESS : i < GARL + STAR ? STARBRIGHTNESS : WALLBRIGHTNESS);
     if (!runWallVideo) {
       c.gammaCorrection();
     }
@@ -111,9 +119,9 @@ bool Anim::run()
       pixels.setPixelColor((STAR + GARL) - (i - GARL) - 1, pixels.Color(c.g, c.r, c.b));
     else if (i >= STAR + GARL)
     {
-      if (!runWallVideo) {
-        c.setbrightness(WALLBRIGHTNESS);
-      }
+      //if (!runWallVideo) {
+        //c.setbrightness(WALLBRIGHTNESS);
+      //}
       pixels_wall.setPixelColor(i - (STAR + GARL), pixels.Color(c.r, c.g, c.b));
     }
   }

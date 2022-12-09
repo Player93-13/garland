@@ -20,6 +20,9 @@ WiFiManager wm;
 void setup() {
   WiFi.mode(WIFI_STA);
   Serial.begin(115200);         // Start the Serial communication to send messages to the computer
+
+  pinMode(PIN_PS_ON, OUTPUT);
+  digitalWrite(PIN_PS_ON, HIGH);
   
   //wm.resetSettings();
   //wm.setConfigPortalBlocking(false);
