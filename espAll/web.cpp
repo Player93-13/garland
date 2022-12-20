@@ -51,7 +51,7 @@ void WebServerSetup()
 
   ws.onEvent(onWsEvent);
   server.addHandler(&ws);
-
+  DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
   server.begin();                           // Actually start the server
 #ifdef DEBUG
   Serial.println("HTTP server started");

@@ -1,0 +1,297 @@
+﻿@page "/effects"
+@inject HttpClient Http
+<style>
+    .color {
+        height: 40px;
+        width: 40px;
+    }
+
+    .color-box {
+        margin-bottom: 1rem;
+        height: 50px;
+        width: 50px;
+        padding: 4px 4px 4px 4px;
+        background-color: #222;
+        border: 1px solid #dee2e6;
+        border-radius: .25rem;
+    }
+</style>
+<h3>Effects</h3>
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pal0" type="button" role="tab" aria-controls="nav-profile" aria-selected="true">Rgb</button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pal1" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Rainbow</button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pal2" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">RainbowStripe</button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pal3" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Party</button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pal4" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Heat</button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pal5" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Fire</button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pal6" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">IceBlue</button>
+        @if (pallets == null)
+        {
+            <span>Loading...</span>
+        }
+        else
+        {
+            foreach (var pallete in pallets)
+            {
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#@pallete.Id" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">@pallete.Name</button>
+            }
+        }
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="pal0" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+        <div class="row">
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #ff0000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #00ff00;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #0000ff;"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="pal1" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+        <div class="row">
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #FF0000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #AB5500;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #ABAB00;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #00FF00;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #00AB55;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #0000FF;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #5500AB;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #AB0055;"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="pal2" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+        <div class="row">
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #FF0000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #AB5500;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #ABAB00;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #00FF00;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #00AB55;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #0000FF;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #5500AB;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #AB0055;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="pal3" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+        <div class="row">
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #5500AB;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #84007C;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #B5004B;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #E5001B;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #E81700;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #B84700;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #AB7700;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #ABAB00;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #AB5500;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #DD2200;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #F2000E;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #C2003E;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #8F0071;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #5F00A1;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #2F00D0;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #0007F9;"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="pal4" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+        <div class="row">
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #700070;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #FF0000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #FFFF00;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #FFFFCC;"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="pal5" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+        <div class="row">
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #000000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #220000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #880000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #FF0000;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #FF6600;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #FFCC00;"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="pal6" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+        <div class="row">
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #ffffff;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #0000ff;"></div></div>
+            </div>
+            <div class="col-3">
+                <div class="color-box"><div class="color" style="background-color: #00ffff;"></div></div>
+            </div>
+        </div>
+    </div>
+    @if (pallets != null)
+    {
+        foreach (var pallete in pallets)
+        {
+            <div class="tab-pane fade" id="@pallete.Id" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+                <div class="row">
+                    @foreach (var color in pallete.Colors)
+                    {
+                        <div class="col-3">
+                            <div class="color-box"><div class="color" style="background-color: #@color;"></div></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+@if (pallets == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Colors</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pallete in pallets)
+            {
+                <tr>
+                    <td>@pallete.Id</td>
+                    <td>@pallete.Name</td>
+                    <td>@string.Join(", ", pallete.Colors)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private Pallete[] pallets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pallets = await Http.GetFromJsonAsync<Pallete[]>("pallete.json");
+    }
+
+    public class Pallete
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        public ICollection<string> Colors { get; set; }
+    }
+}
