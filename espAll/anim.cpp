@@ -1,4 +1,4 @@
-#include <Adafruit_NeoPixel.h>
+#include <FastLED.h>
 #include "color.h"
 #include "palette.h"
 #include "anim.h"
@@ -7,13 +7,14 @@
 extern LastState State;
 
 //Adafruit's class to operate strip
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(GARL + STAR, PIN, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel pixels_wall = Adafruit_NeoPixel(WALL, PIN_WALL, NEO_GRB + NEO_KHZ800);
+//Adafruit_NeoPixel pixels = Adafruit_NeoPixel(GARL + STAR, PIN, NEO_GRB + NEO_KHZ800);
+//Adafruit_NeoPixel pixels_wall = Adafruit_NeoPixel(WALL, PIN_WALL, NEO_GRB + NEO_KHZ800);
 
 Color PalCustom_ [64];
 Palette PalCustom = { 1, PalCustom_ };
 
 Color *leds;
+CRGB leds_FastLed[LEDS];
 
 //video
 uint8_t wallBytes[WALL * 3];
@@ -113,21 +114,22 @@ bool Anim::run()
       c.gammaCorrection();
     }
 
-    if (i < GARL)
-      pixels.setPixelColor(i, pixels.Color(c.r, c.g, c.b));
-    else if (i >= GARL && i < STAR + GARL)
-      pixels.setPixelColor((STAR + GARL) - (i - GARL) - 1, pixels.Color(c.g, c.r, c.b));
-    else if (i >= STAR + GARL)
-    {
-      //if (!runWallVideo) {
-        //c.setbrightness(WALLBRIGHTNESS);
-      //}
-      pixels_wall.setPixelColor(i - (STAR + GARL), pixels.Color(c.r, c.g, c.b));
-    }
+    leds_FastLed[i] = CRGB(c.r, c.g, c.b);
+
+    // if (i < GARL)
+    //   pixels.setPixelColor(i, pixels.Color(c.r, c.g, c.b));
+    // else if (i >= GARL && i < STAR + GARL)
+    //   pixels.setPixelColor((STAR + GARL) - (i - GARL) - 1, pixels.Color(c.g, c.r, c.b));
+    // else if (i >= STAR + GARL)
+    // {
+    //   //if (!runWallVideo) {
+    //     //c.setbrightness(WALLBRIGHTNESS);
+    //   //}
+    //   pixels_wall.setPixelColor(i - (STAR + GARL), pixels.Color(c.r, c.g, c.b));
+    // }
   }
 
-  pixels.show();
-  pixels_wall.show();
+  FastLED.show();
 
   return true;
 }
@@ -255,8 +257,8 @@ Anim anim = Anim();
 
 void AnimSetup()
 {
-  pixels.begin();
-  pixels_wall.begin();
+  FastLED.addLeds<NEOPIXEL, PIN>(leds_FastLed, 0, GARL + STAR);
+  FastLED.addLeds<NEOPIXEL, PIN_WALL>(leds_FastLed, GARL + STAR, WALL);
   LoadConfig();
   anim.setAnim(State.animId);
   anim.setPaletteById(State.palId);
