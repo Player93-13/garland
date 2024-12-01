@@ -1,7 +1,8 @@
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Net.WebSockets;
+using System.Net;
+using System.Net.Sockets;
 using System.Timers;
 
 namespace VideoBroadcaster
@@ -24,38 +25,28 @@ namespace VideoBroadcaster
         static Bitmap result_btmp = new(out_display_width, out_display_height + 3);
         static Graphics gr_result = Graphics.FromImage(result_btmp);
         static byte[] result_btmp_arr = new byte[out_display_width * out_display_height * 3];
-        static ClientWebSocket WS = new();
-        bool WSconnected = false;
+        bool WSconnected;
         Task WSsend;
+
+        Socket s = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        IPAddress broadcast;
+        IPEndPoint ep;
 
         const int out_display_width = 16;
         const int out_display_height = 25;
         const int width = 32 * 10;
         const int height = 28 * 10;
 
-        private Rectangle _rec = new(600, 0, width, height);
-        protected bool Runing = true;
-        protected Task DrawTask = Task.Delay(0);
-        int _frame = 0;
-        int _totalframes = 0;
-        int _missedFrames = 0;
+        private Rectangle bounds = new(600, 0, width, height);
+        private bool Runing = true;
+        private Task DrawTask = Task.Delay(0);
+        int _frame;
+        int _totalframes;
 
-        private async void button1_Click(object sender, EventArgs e)
+        protected async Task Draw()
         {
-            Runing = !Runing;
-            if (Runing)
-            {
-                DrawTask = Draw(_rec);
-                await DrawTask;
-            }
-        }
-
-        protected async Task Draw(Rectangle bounds)
-        {
-            //Stopwatch timer = new();
-            //timer.Start();
-            using Bitmap source = new(bounds.Width, bounds.Height);
-            using Graphics gr_source = Graphics.FromImage(source);
+            Stopwatch timer = new();
+            timer.Start();
 
             using Bitmap screen = new(width, height);
             using Graphics gr_screen = Graphics.FromImage(screen);
@@ -71,6 +62,8 @@ namespace VideoBroadcaster
             while (Runing)
             {
                 //timer.Restart();
+                using Bitmap source = new(bounds.Width, bounds.Height);
+                using Graphics gr_source = Graphics.FromImage(source);
                 gr_source.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
                 gr_result.DrawImage(source, new Rectangle(0, 0, out_display_width, out_display_height + 3), 0, 0, source.Width, source.Height, GraphicsUnit.Pixel, wrapMode);
                 result_btmp_arr = ImageToByte(result_btmp, checkBox3.Checked, trackBar1.Value, trackBar1.Maximum);
@@ -78,20 +71,11 @@ namespace VideoBroadcaster
 
                 if (WSconnected)
                 {
-                    if (WSsend == null || WSsend.IsCompleted)
+                    if (WSsend != null)
                     {
-                        WSsend = WS.SendAsync(result_btmp_arr, WebSocketMessageType.Binary, true, CancellationToken.None);
+                        await WSsend;
                     }
-                    else
-                    {
-                        if (_missedFrames++ > 100)
-                        {
-                            WS.Dispose();
-                            WS = new ClientWebSocket();
-                            await WS.ConnectAsync(new Uri(textBox1.Text.Trim()), CancellationToken.None);
-                            _missedFrames = 0;
-                        }
-                    }
+                    WSsend = s.SendToAsync(result_btmp_arr, ep);
                 }
 
                 if (checkBox2.Checked)
@@ -109,9 +93,9 @@ namespace VideoBroadcaster
                 }
 
                 //timer.Stop();
-                //int delay = 1000 / 30 - (int)timer.ElapsedMilliseconds;
-                int delay = 15;
-                await Task.Delay(delay > 0 ? delay : 1);
+                //int delay = 1000 / 100 - (int)timer.ElapsedMilliseconds;
+                //await Task.Delay(delay > 0 ? delay : 1);
+                await Task.Delay(1);
             }
         }
 
@@ -146,54 +130,43 @@ namespace VideoBroadcaster
             return result;
         }
 
-        private async void Form1_KeyDown(object sender, KeyEventArgs e)
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
                 case Keys.D:
-                    _rec = new Rectangle(_rec.X + 1, _rec.Y, _rec.Width, _rec.Height);
+                    bounds = new Rectangle(bounds.X + 1, bounds.Y, bounds.Width, bounds.Height);
                     break;
                 case Keys.A:
-                    _rec = new Rectangle(_rec.X - 1, _rec.Y, _rec.Width, _rec.Height);
+                    bounds = new Rectangle(bounds.X - 1, bounds.Y, bounds.Width, bounds.Height);
                     break;
                 case Keys.W:
-                    _rec = new Rectangle(_rec.X, _rec.Y - 1, _rec.Width, _rec.Height);
+                    bounds = new Rectangle(bounds.X, bounds.Y - 1, bounds.Width, bounds.Height);
                     break;
                 case Keys.S:
-                    _rec = new Rectangle(_rec.X, _rec.Y + 1, _rec.Width, _rec.Height);
+                    bounds = new Rectangle(bounds.X, bounds.Y + 1, bounds.Width, bounds.Height);
                     break;
                 case Keys.Add:
-                    _rec = new Rectangle(_rec.X, _rec.Y, _rec.Width + out_display_width, _rec.Height + out_display_height);
+                    bounds = new Rectangle(bounds.X, bounds.Y, (int)(bounds.Width * 1.1), (int)(bounds.Height * 1.1));
                     break;
                 case Keys.Subtract:
-                    if (_rec.Width > 19)
+                    if (bounds.Width > 19)
                     {
-                        _rec = new Rectangle(_rec.X, _rec.Y, _rec.Width - out_display_width, _rec.Height - out_display_height);
+                        bounds = new Rectangle(bounds.X, bounds.Y, (int)(bounds.Width * 0.9), (int)(bounds.Height * 0.9));
                     }
                     break;
 
                 default:
                     return;
             }
-
-            Runing = false;
-            await DrawTask;
-            Runing = true;
-            DrawTask = Draw(_rec);
-            await DrawTask;
         }
 
         private async void Form1_Shown(object sender, EventArgs e)
         {
             Runing = true;
-            DrawTask = Draw(_rec);
+            DrawTask = Draw();
             SetTimer();
             await DrawTask;
-        }
-
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            checkBox1.Enabled = checkBox2.Checked;
         }
 
         private System.Timers.Timer aTimer;
@@ -208,27 +181,30 @@ namespace VideoBroadcaster
             aTimer.Enabled = true;
         }
 
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBox1.Enabled = checkBox2.Checked;
+        }
+
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             label2.Text = _frame.ToString();
             _frame = 0;
             label5.Text = _totalframes.ToString();
-            label6.Text = _missedFrames.ToString();
-            label8.Text = WS.State.ToString();
         }
 
-        private async void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             if (!WSconnected)
             {
-                await WS.ConnectAsync(new Uri(textBox1.Text.Trim()), CancellationToken.None);
+                var addr = textBox1.Text.Trim().Split(':');
+                broadcast = IPAddress.Parse(addr[0]);
+                ep = new(broadcast, addr.Length > 1 ? int.Parse(addr[1]) : 80);
                 WSconnected = true;
                 button2.Text = "disconnect";
             }
             else
             {
-                WS.Dispose();
-                WS = new ClientWebSocket();
                 WSconnected = false;
                 button2.Text = "connect";
             }

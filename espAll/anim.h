@@ -1,6 +1,6 @@
 #ifndef anim_h
 #define anim_h
-#include <Adafruit_NeoPixel.h>
+#include <FastLED.h>
 #include "palette.h"
 
 // #ifdef ESP32
@@ -163,7 +163,7 @@ class Anim {
     bool run();//returns true if actual change has completed, or false if it's dummy call (previous call was too recent in time)
     void doSetUp();
 
-    Color getMatrix(int i, int j);
+    Color getMatrix(int i, int j);    
 };
 
 unsigned int rng();
