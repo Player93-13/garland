@@ -2,6 +2,7 @@
 #include <FS.h>
 #include <SPIFFS.h>
 #include <AsyncTCP.h>
+#include "AsyncUDP.h"
 #elif defined(ESP8266)
 #include <ESPAsyncTCP.h>
 #endif
@@ -23,6 +24,7 @@ extern LastState State;
 
 AsyncWebServer server(80);    // Create a webserver object that listens for HTTP request on port 80
 AsyncWebSocket ws("/ws");
+AsyncUDP udp;
 
 void handleSendCommand(AsyncWebServerRequest *request);
 void handleNewPal(AsyncWebServerRequest *request);
@@ -34,6 +36,13 @@ void wsRunColor(uint8_t *payload);
 
 void WebServerSetup()
 {
+  if (udp.listen(3265)) { // прием видеокадра
+    udp.onPacket([](AsyncUDPPacket packet) {
+      memcpy(&wallBytes, packet.data(), packet.length());
+      wallBytesReady = true;
+    });
+  }
+
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
@@ -92,28 +101,29 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
           wsRunColor(data);
         }
       }
-    } else
-    {
-      //message is comprised of multiple frames or the frame is split into multiple packets
-      if (info->message_opcode != WS_TEXT)
-      {
-        if (info->index < WALL_WIDTH * WALL_HEIGHT * 3 + 1)
-        {
-          memcpy(&wallBytes[info->index], data, len);
-        }
-      }
-
-      if ((info->index + len) == info->len)
-      {
-        if (info->final)
-        {
-          if (info->message_opcode != WS_TEXT)
-          {
-            wallBytesReady = true;
-          }
-        }
-      }
     }
+    //    else
+    //    {
+    //      //message is comprised of multiple frames or the frame is split into multiple packets
+    //      if (info->message_opcode != WS_TEXT)
+    //      {
+    //        if (info->index < WALL_WIDTH * WALL_HEIGHT * 3 + 1)
+    //        {
+    //          memcpy(&wallBytes[info->index], data, len);
+    //        }
+    //      }
+    //
+    //      if ((info->index + len) == info->len)
+    //      {
+    //        if (info->final)
+    //        {
+    //          if (info->message_opcode != WS_TEXT)
+    //          {
+    //            wallBytesReady = true;
+    //          }
+    //        }
+    //      }
+    //    }
   }
 }
 
