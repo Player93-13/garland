@@ -3,10 +3,17 @@
 #include <Adafruit_NeoPixel.h>
 #include "palette.h"
 
+// #ifdef ESP32
+// #define PIN 25 // WS2812 pin number
+// #define PIN_WALL 23 // window wall pin
+// #define PIN_PS_ON 27 // power switch
+// #else
 #define PIN 5 // WS2812 pin number
 #define PIN_WALL 4 // window wall pin
 #define PIN_PS_ON 12 // power switch
-#define GARL 494
+// #endif
+
+#define GARL 25
 #define STAR 11
 #define WALL_WIDTH 16
 #define WALL_HEIGHT 25

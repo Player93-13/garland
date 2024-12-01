@@ -21,7 +21,7 @@ namespace VideoBroadcaster
             gr_result.PixelOffsetMode = PixelOffsetMode.HighQuality;
         }
 
-        static Bitmap result_btmp = new(out_display_width, out_display_height);
+        static Bitmap result_btmp = new(out_display_width, out_display_height + 3);
         static Graphics gr_result = Graphics.FromImage(result_btmp);
         static byte[] result_btmp_arr = new byte[out_display_width * out_display_height * 3];
         static ClientWebSocket WS = new();
@@ -30,8 +30,8 @@ namespace VideoBroadcaster
 
         const int out_display_width = 16;
         const int out_display_height = 25;
-        const int width = out_display_width * 20;
-        const int height = out_display_height * 20;
+        const int width = 32 * 10;
+        const int height = 28 * 10;
 
         private Rectangle _rec = new(600, 0, width, height);
         protected bool Runing = true;
@@ -72,7 +72,7 @@ namespace VideoBroadcaster
             {
                 //timer.Restart();
                 gr_source.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
-                gr_result.DrawImage(source, new Rectangle(0,0, out_display_width, out_display_height), 0, 0, source.Width, source.Height, GraphicsUnit.Pixel, wrapMode);
+                gr_result.DrawImage(source, new Rectangle(0, 0, out_display_width, out_display_height + 3), 0, 0, source.Width, source.Height, GraphicsUnit.Pixel, wrapMode);
                 result_btmp_arr = ImageToByte(result_btmp, checkBox3.Checked, trackBar1.Value, trackBar1.Maximum);
                 _frame++; _totalframes++;
 
@@ -110,23 +110,36 @@ namespace VideoBroadcaster
 
                 //timer.Stop();
                 //int delay = 1000 / 30 - (int)timer.ElapsedMilliseconds;
-                int delay = 0;
+                int delay = 15;
                 await Task.Delay(delay > 0 ? delay : 1);
             }
         }
 
         public static byte[] ImageToByte(Bitmap img, bool flipHorizontally, int brightness, int maxBrightness)
         {
-            byte[] result = new byte[img.Height * img.Width * 3];
+            byte[] result = new byte[out_display_width * out_display_height * 3];
             int k = 0;
             for (int i = 0; i < img.Width; i++)
             {
-                for (int j = 0; j < img.Height; j++)
+                if (i % 2 == 0)
                 {
-                    var c = img.GetPixel(flipHorizontally ? img.Width - 1 - i : i, j);
-                    result[k++] = (byte)(brightness * c.R / maxBrightness);
-                    result[k++] = (byte)(brightness * c.G / maxBrightness);
-                    result[k++] = (byte)(brightness * c.B / maxBrightness);
+                    for (int j = 5; j < img.Height - 1; j++)
+                    {
+                        var c = img.GetPixel(flipHorizontally ? img.Width - 1 - i : i, j);
+                        result[k++] = (byte)(brightness * c.R / maxBrightness);
+                        result[k++] = (byte)(brightness * c.G / maxBrightness);
+                        result[k++] = (byte)(brightness * c.B / maxBrightness);
+                    }
+                }
+                else
+                {
+                    for (int j = img.Height - 1; j >= 0; j--)
+                    {
+                        var c = img.GetPixel(flipHorizontally ? img.Width - 1 - i : i, j);
+                        result[k++] = (byte)(brightness * c.R / maxBrightness);
+                        result[k++] = (byte)(brightness * c.G / maxBrightness);
+                        result[k++] = (byte)(brightness * c.B / maxBrightness);
+                    }
                 }
             }
 

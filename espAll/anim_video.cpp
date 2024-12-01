@@ -8,7 +8,7 @@
 //часть гирлянды которая транспонируется на елку (1 / K)
 #define GARL_WALL_K 4
 
-#define PI 3.14159265
+//#define PI 3.14159265
 
 struct Point
 {
@@ -98,37 +98,30 @@ void Anim::animVideo_SetUp() {
     leds[i] = Color();
   }
 
-  TreeCalculate();
+  //TreeCalculate();
 }
 
 void Anim::animVideo_Run() {
   //занавес
   for (uint16_t i = 0; i < WALL_WIDTH; i++)
   {
-    bool reverse = i % 2 == 1;
-    uint16_t k = reverse ? WALL_HEIGHT - 1 : 0; // для расчета навески змейкой
-
     for (uint16_t j = 0; j < WALL_HEIGHT; j++)
     {
-      leds[WALL_OFFSET + i * WALL_HEIGHT + k] = getMatrix(i, j);
-      if (reverse)
-        k--;
-      else
-        k++;
+      leds[WALL_OFFSET + i * WALL_HEIGHT + j] = getMatrix(i, j);
     }
   }
 
   //елка
-  for (uint16_t i = 0; i < GARL; i++)
-  {
-    Point p = Garland[i];
-    leds[i] = getMatrix(p.X, p.Y);
-  }
+  //for (uint16_t i = 0; i < GARL; i++)
+  //{
+    //Point p = Garland[i];
+    //leds[i] = getMatrix(p.X, p.Y);
+  //}
 
   //звезда
-  for (uint16_t i = 0; i < STAR; i++)
-  {
-    Point p = Star[i];
-    leds[i + GARL] = getMatrix(p.X, p.Y);
-  }
+  //for (uint16_t i = 0; i < STAR; i++)
+  //{
+    //Point p = Star[i];
+    //leds[i + GARL] = getMatrix(p.X, p.Y);
+  //}
 }
