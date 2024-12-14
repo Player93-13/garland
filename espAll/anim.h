@@ -3,17 +3,26 @@
 #include <FastLED.h>
 #include "palette.h"
 
-// #ifdef ESP32
-// #define PIN 25 // WS2812 pin number
-// #define PIN_WALL 23 // window wall pin
-// #define PIN_PS_ON 27 // power switch
-// #else
-#define PIN 5 // WS2812 pin number
-#define PIN_WALL 4 // window wall pin
-#define PIN_PS_ON 12 // power switch
-// #endif
+#define PIN_ORANGE_1 4  // garl 1
+#define PIN_BLUE_1 2    // garl 2
+#define PIN_GREEN_1 8   // garl 3
+#define PIN_BROWN_1 10  // star
+#define PIN_ORANGE_2 36 // wall
+#define PIN_BLUE_2 38
+#define PIN_GREEN_2 21
+#define PIN_BROWN_2 17
+#define PIN_PS_ON 14 // power switch
 
-#define GARL 25
+#define PIN_ORANGE_1 4
+#define PIN_BLUE_1 2
+#define PIN_GREEN_1 8
+#define PIN_BROWN_1 10
+#define PIN_ORANGE_2 36
+
+#define GARL1 400
+#define GARL2 200
+#define GARL3 300
+#define GARL (GARL1 + GARL2 + GARL3)
 #define STAR 11
 #define WALL_WIDTH 16
 #define WALL_HEIGHT 25

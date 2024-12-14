@@ -98,7 +98,7 @@ void Anim::animVideo_SetUp() {
     leds[i] = Color();
   }
 
-  //TreeCalculate();
+  TreeCalculate();
 }
 
 void Anim::animVideo_Run() {
@@ -112,16 +112,16 @@ void Anim::animVideo_Run() {
   }
 
   //елка
-  //for (uint16_t i = 0; i < GARL; i++)
-  //{
-    //Point p = Garland[i];
-    //leds[i] = getMatrix(p.X, p.Y);
-  //}
+  for (uint16_t i = 0; i < GARL; i++)
+  {
+    Point p = Garland[i];
+    leds[i] = getMatrix(p.X, p.Y);
+  }
 
   //звезда
-  //for (uint16_t i = 0; i < STAR; i++)
-  //{
-    //Point p = Star[i];
-    //leds[i + GARL] = getMatrix(p.X, p.Y);
-  //}
+  for (uint16_t i = 0; i < STAR; i++)
+  {
+    Point p = Star[i];
+    leds[i + GARL] = getMatrix(p.X, p.Y);
+  }
 }
