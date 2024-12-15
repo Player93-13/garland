@@ -5,6 +5,7 @@
 #include "AsyncUDP.h"
 #elif defined(ESP8266)
 #include <ESPAsyncTCP.h>
+#include <ESPAsyncUDP.h>
 #endif
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
