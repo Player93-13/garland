@@ -2,7 +2,7 @@
 
 void Anim::animFill_SetUp() {
   Color c = palette->getPalColor(0);
-  for (int i = 0; i < LEDS; i++) {
+  for (int i = 0; i < LEDS_ALL; i++) {
     leds[i] = c;
   }
 }

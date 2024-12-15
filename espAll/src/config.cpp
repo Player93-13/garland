@@ -14,7 +14,7 @@ LastState State = LastState();
 void LoadConfig()
 {
   File _f = SPIFFS.open(LastStateFileName, "r");
-  DynamicJsonDocument _doc(_f.size() * 4 + 100);
+  JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
@@ -45,7 +45,7 @@ void SaveConfig()
     return;
   }
 
-  StaticJsonDocument<256> _doc;
+  JsonDocument _doc;
   _doc["animId"] = State.animId;
   _doc["palId"] = State.palId;
 

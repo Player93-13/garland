@@ -28,7 +28,7 @@
 #define WALL_HEIGHT 25
 #define WALL (WALL_WIDTH * WALL_HEIGHT + 1)
 #define WALL_OFFSET (GARL + STAR + 1)
-#define LEDS (GARL + STAR + WALL)  // number of LEDs in the strip.
+#define LEDS_ALL (GARL + STAR + WALL)  // number of LEDs in the strip.
 
 #define BRIGHTNESS 255// brightness adjustment, up to 255
 #define STARBRIGHTNESS 215
@@ -54,10 +54,10 @@ class Anim {
 
   private:
     //Color arrays - two for making transition
-    static Color leds1[LEDS];
-    static Color leds2[LEDS];
+    static Color leds1[LEDS_ALL];
+    static Color leds2[LEDS_ALL];
     //auxiliary colors array
-    static Color ledstmp[LEDS];
+    static Color ledstmp[LEDS_ALL];
     
     void animStart();
 
@@ -90,8 +90,8 @@ class Anim {
 
     Color sparkleColor = Color(0xFFFFFF);
 
-    static byte seq[LEDS];
-    static uint16_t positions[LEDS];
+    static byte seq[LEDS_ALL];
+    static uint16_t positions[LEDS_ALL];
 
     //brigthness animation (BrA) current initial phase
     byte braPhase;

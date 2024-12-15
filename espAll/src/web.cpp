@@ -153,7 +153,7 @@ void wsRunColor(uint8_t *payload)
 void loadCustomPal(int pId)
 {
   File _f = SPIFFS.open(JSONpalFile, "r");
-  DynamicJsonDocument _doc(_f.size() * 4 + 5000);
+  JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
@@ -270,7 +270,7 @@ void addNePalToFile(long id, String palName, String colors)
 {
   File _f = SPIFFS.open(JSONpalFile, "r");
 
-  DynamicJsonDocument _doc(_f.size() * 4 + 5000);
+  JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
@@ -280,10 +280,10 @@ void addNePalToFile(long id, String palName, String colors)
   }
 #endif
 
-  StaticJsonDocument<1200> _newP;
+  JsonDocument _newP;
   _newP["id"] = id;
   _newP["name"] = palName;
-  JsonArray _colrs = _newP.createNestedArray("colors");
+  JsonArray _colrs = _newP["colors"].to<JsonArray>();
   for (int i = 0; i < colors.length(); i += 6)
   {
     _colrs.add(colors.substring(i, i + 6));
@@ -306,7 +306,7 @@ void deletePal(int id)
 {
   File _f = SPIFFS.open(JSONpalFile, "r");
 
-  DynamicJsonDocument _doc(_f.size() * 4 + 5000);
+  JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
