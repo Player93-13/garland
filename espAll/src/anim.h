@@ -1,6 +1,5 @@
 #ifndef anim_h
 #define anim_h
-#include <FastLED.h>
 #include "palette.h"
 
 #define PIN_ORANGE_1 4  // garl 1
@@ -13,11 +12,6 @@
 #define PIN_BROWN_2 17
 #define PIN_PS_ON 14 // power switch
 
-#define PIN_ORANGE_1 4
-#define PIN_BLUE_1 2
-#define PIN_GREEN_1 8
-#define PIN_BROWN_1 10
-#define PIN_ORANGE_2 36
 
 #define GARL1 400
 #define GARL2 200
