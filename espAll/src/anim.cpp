@@ -1,3 +1,5 @@
+#define FASTLED_RMT5_RECYCLE 1
+//#define FASTLED_LED_OVERCLOCK 1.2
 #include <FastLED.h>
 #include "color.h"
 #include "palette.h"
@@ -257,11 +259,12 @@ Anim anim = Anim();
 
 void AnimSetup()
 {
-  FastLED.addLeds<NEOPIXEL, PIN_ORANGE_1>(leds_FastLed, 0, GARL1);
-  FastLED.addLeds<NEOPIXEL, PIN_BLUE_1>(leds_FastLed, GARL1, GARL2);
-  FastLED.addLeds<NEOPIXEL, PIN_GREEN_1>(leds_FastLed, GARL1 + GARL2, GARL3);
-  FastLED.addLeds<APA106, PIN_BROWN_1>(leds_FastLed, GARL, STAR);
   FastLED.addLeds<NEOPIXEL, PIN_ORANGE_2>(leds_FastLed, GARL + STAR, WALL);
+  FastLED.addLeds<NEOPIXEL, PIN_ORANGE_1>(leds_FastLed, 0, GARL1);
+  FastLED.addLeds<NEOPIXEL, PIN_GREEN_1>(leds_FastLed, GARL1 + GARL2, GARL3);
+  FastLED.addLeds<NEOPIXEL, PIN_BLUE_1>(leds_FastLed, GARL1, GARL2);
+  FastLED.addLeds<APA106, PIN_BROWN_1>(leds_FastLed, GARL, STAR);
+  
   LoadConfig();
   anim.setAnim(State.animId);
   anim.setPaletteById(State.palId);

@@ -1,7 +1,7 @@
 #ifdef ESP32
 #include <WiFi.h>
 //#include <FS.h>
-#include <SPIFFS.h>
+#include <LittleFS.h>
 #elif defined(ESP8266)
 #include <ESP8266WiFi.h>
 #endif
@@ -37,7 +37,7 @@ void setup() {
     Serial.println("Configportal running");
   }
   
-  SPIFFS.begin();
+  LittleFS.begin();
   AnimSetup();
 }
 
