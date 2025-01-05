@@ -268,3 +268,4 @@ __pycache__/
 # tools/
 ArduinoOutput/
 espAll/.vscode/
+.pio

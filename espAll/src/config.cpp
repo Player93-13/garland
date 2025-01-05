@@ -1,9 +1,5 @@
-#ifdef ESP32
-#include <FS.h>
-#include <SPIFFS.h>
-#endif
+#include <LittleFS.h>
 #include <ArduinoJson.h>
-#include "FS.h"
 #include "config.h"
 #include "anim.h"
 #include "web.h"
@@ -13,8 +9,8 @@ LastState State = LastState();
 
 void LoadConfig()
 {
-  File _f = SPIFFS.open(LastStateFileName, "r");
-  DynamicJsonDocument _doc(_f.size() * 4 + 100);
+  File _f = LittleFS.open(LastStateFileName, "r");
+  JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
@@ -36,8 +32,8 @@ void LoadConfig()
 
 void SaveConfig()
 {
-  SPIFFS.remove(LastStateFileName);
-  File _f = SPIFFS.open(LastStateFileName, "w");
+  LittleFS.remove(LastStateFileName);
+  File _f = LittleFS.open(LastStateFileName, "w");
   if (!_f) {
 #ifdef DEBUG
     Serial.println(F("Failed to create file"));
@@ -45,7 +41,7 @@ void SaveConfig()
     return;
   }
 
-  StaticJsonDocument<256> _doc;
+  JsonDocument _doc;
   _doc["animId"] = State.animId;
   _doc["palId"] = State.palId;
 

@@ -1,14 +1,13 @@
 #ifdef ESP32
-#include <FS.h>
-#include <SPIFFS.h>
 #include <AsyncTCP.h>
 #include "AsyncUDP.h"
 #elif defined(ESP8266)
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncUDP.h>
 #endif
-#include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
+#include <LittleFS.h>
+#include <ESPAsyncWebServer.h>
 #include "palette.h"
 #include "anim.h"
 #include "config.h"
@@ -48,8 +47,8 @@ void WebServerSetup()
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
 
-  server.serveStatic("/pallete.json", SPIFFS, "/pallete.json").setCacheControl("no-cache");
-  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html").setCacheControl("max-age=604800");
+  server.serveStatic("/pallete.json", LittleFS, "/pallete.json").setCacheControl("no-cache");
+  server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html").setCacheControl("max-age=604800");
 
   server.onNotFound([](AsyncWebServerRequest * request) {
     request->send(404);
@@ -152,8 +151,8 @@ void wsRunColor(uint8_t *payload)
 
 void loadCustomPal(int pId)
 {
-  File _f = SPIFFS.open(JSONpalFile, "r");
-  DynamicJsonDocument _doc(_f.size() * 4 + 5000);
+  File _f = LittleFS.open(JSONpalFile, "r");
+  JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
@@ -268,9 +267,9 @@ void handleDelPal(AsyncWebServerRequest *request)
 
 void addNePalToFile(long id, String palName, String colors)
 {
-  File _f = SPIFFS.open(JSONpalFile, "r");
+  File _f = LittleFS.open(JSONpalFile, "r");
 
-  DynamicJsonDocument _doc(_f.size() * 4 + 5000);
+  JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
@@ -280,10 +279,10 @@ void addNePalToFile(long id, String palName, String colors)
   }
 #endif
 
-  StaticJsonDocument<1200> _newP;
+  JsonDocument _newP;
   _newP["id"] = id;
   _newP["name"] = palName;
-  JsonArray _colrs = _newP.createNestedArray("colors");
+  JsonArray _colrs = _newP["colors"].to<JsonArray>();
   for (int i = 0; i < colors.length(); i += 6)
   {
     _colrs.add(colors.substring(i, i + 6));
@@ -293,7 +292,7 @@ void addNePalToFile(long id, String palName, String colors)
 
   _f.close();
 
-  File _fw = SPIFFS.open(JSONpalFile, "w");
+  File _fw = LittleFS.open(JSONpalFile, "w");
   serializeJson(_doc, _fw);
   _fw.close();
 #ifdef DEBUG
@@ -304,9 +303,9 @@ void addNePalToFile(long id, String palName, String colors)
 
 void deletePal(int id)
 {
-  File _f = SPIFFS.open(JSONpalFile, "r");
+  File _f = LittleFS.open(JSONpalFile, "r");
 
-  DynamicJsonDocument _doc(_f.size() * 4 + 5000);
+  JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
   if (_error) {
@@ -327,7 +326,7 @@ void deletePal(int id)
   }
   _f.close();
 
-  File _fw = SPIFFS.open(JSONpalFile, "w");
+  File _fw = LittleFS.open(JSONpalFile, "w");
   serializeJson(_doc, _fw);
   _fw.close();
 #ifdef DEBUG

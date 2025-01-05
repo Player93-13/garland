@@ -18,13 +18,13 @@ void Anim::animFly_Run() {
     
     byte launchpos;
     if (inc > 0) {
-        launchpos = LEDS-1;
-        for (int i=1;i<LEDS;i++) {
+        launchpos = 0;
+        for (int i=1;i<LEDS_ALL;i++) {
             leds[i-1] = leds[i];
         }
     } else {
         launchpos = 0;
-        for (int i=LEDS-2;i>=0;i--) {
+        for (int i=LEDS_ALL-2;i>=0;i--) {
             leds[i+1] = leds[i];
         }
     }

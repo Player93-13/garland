@@ -1,3 +1,7 @@
+#define FASTLED_RMT5_RECYCLE 1
+//#define FASTLED_LED_OVERCLOCK 1.2
+//#define FASTLED_ALL_PINS_HARDWARE_SPI 1
+
 #include <FastLED.h>
 #include "color.h"
 #include "palette.h"
@@ -14,7 +18,7 @@ Color PalCustom_ [64];
 Palette PalCustom = { 1, PalCustom_ };
 
 Color *leds;
-CRGB leds_FastLed[LEDS];
+CRGB leds_FastLed[LEDS_ALL];
 
 //video
 uint8_t wallBytes[WALL * 3];
@@ -100,7 +104,7 @@ bool Anim::run()
 
   Color * leds_prev = (leds == leds1) ? leds2 : leds1;
 
-  for (int i = 0; i < LEDS; i++)
+  for (int i = 0; i < LEDS_ALL; i++)
   {
     Color c = leds[i];
 
@@ -248,7 +252,7 @@ byte rngb() {
 
 Color Anim::GetGradientColor(int pos, uint8_t colorOffset, int paletteCut)
 {
-  uint8_t x = ((256 * pos / LEDS / paletteCut) + colorOffset) % 256;
+  uint8_t x = ((256 * pos / LEDS_ALL / paletteCut) + colorOffset) % 256;
 
   return palette->getPalColor(x);
 }
@@ -258,10 +262,12 @@ Anim anim = Anim();
 void AnimSetup()
 {
   FastLED.addLeds<NEOPIXEL, PIN_ORANGE_1>(leds_FastLed, 0, GARL1);
-  FastLED.addLeds<NEOPIXEL, PIN_BLUE_1>(leds_FastLed, GARL1, GARL2);
-  FastLED.addLeds<NEOPIXEL, PIN_GREEN_1>(leds_FastLed, GARL1 + GARL1, GARL3);
-  FastLED.addLeds<APA106, PIN_BROWN_1>(leds_FastLed, GARL, STAR);
   FastLED.addLeds<NEOPIXEL, PIN_ORANGE_2>(leds_FastLed, GARL + STAR, WALL);
+  
+  FastLED.addLeds<NEOPIXEL, PIN_GREEN_1>(leds_FastLed, GARL1 + GARL2, GARL3);
+  FastLED.addLeds<NEOPIXEL, PIN_BLUE_1>(leds_FastLed, GARL1, GARL2);
+  FastLED.addLeds<APA106, PIN_BROWN_1>(leds_FastLed, GARL, STAR);
+  
   LoadConfig();
   anim.setAnim(State.animId);
   anim.setPaletteById(State.palId);
@@ -269,8 +275,8 @@ void AnimSetup()
   anim.doSetUp();
 }
 
-Color Anim::leds1[LEDS];
-Color Anim::leds2[LEDS];
-Color Anim::ledstmp[LEDS];
-byte Anim::seq[LEDS];
-uint16_t Anim::positions[LEDS];
+Color Anim::leds1[LEDS_ALL];
+Color Anim::leds2[LEDS_ALL];
+Color Anim::ledstmp[LEDS_ALL];
+byte Anim::seq[LEDS_ALL];
+uint16_t Anim::positions[LEDS_ALL];

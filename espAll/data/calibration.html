@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html data-bs-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Управление гирляндой</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+    <script src="js/unobtr.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand bg-body-tertiary">
+        <div class="container">
+            <svg style="color: #fff; width: 32px; height: 32px;" aria-hidden="true" focusable="false" data-prefix="far"
+                data-icon="tree" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+                class="svg-inline--fa fa-tree fa-w-14 fa-3x">
+                <path fill="currentColor"
+                    d="M442.2 376.2l-55.5-64.4h5.3c9.3 0 17.8-5.4 21.8-13.9 3.9-8.5 2.6-18.5-3.5-25.6l-54.6-64.5H368c9.5 0 18.1-5.6 21.9-14.2 3.8-8.7 2.2-18.8-4.1-25.8L241.9 7.6c-9.1-10.1-26.6-10.1-35.7 0l-144 160.1c-6.3 7.1-7.9 17.2-4.1 25.8 3.9 8.7 12.5 14.2 21.9 14.2h12.2l-54.6 64.5c-6 7.1-7.4 17.1-3.5 25.6s12.4 13.9 21.8 13.9h5.3L5.8 376.2c-6.1 7.1-7.5 17.2-3.6 25.7s12.4 14 21.8 14h168v24.5l-30.3 48.4c-5.3 10.6 2.4 23.2 14.3 23.2h96c11.9 0 19.6-12.5 14.3-23.2L256 440.4v-24.5h168c9.4 0 17.9-5.5 21.8-14s2.5-18.6-3.6-25.7zm-365.8-8.3L166 263.8h-58.3l88-104.1h-61.9L224 59.5l90.1 100.2h-61.9l88 104.1H282l89.7 104.1z"
+                    class=""></path>
+            </svg>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav justify-content-center w-100">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><svg style="width:18px; height:18px;" aria-hidden="true"
+                                focusable="false" data-prefix="fas" data-icon="holly-berry" role="img"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+                                class="svg-inline--fa fa-holly-berry fa-w-14 fa-3x">
+                                <path fill="currentColor"
+                                    d="M144 192c26.5 0 48-21.5 48-48s-21.5-48-48-48-48 21.5-48 48 21.5 48 48 48zm112-48c0 26.5 21.5 48 48 48s48-21.5 48-48-21.5-48-48-48-48 21.5-48 48zm-32-48c26.5 0 48-21.5 48-48S250.5 0 224 0s-48 21.5-48 48 21.5 48 48 48zm-16.2 139.1c.1-12.4-13.1-20.1-23.8-13.7-34.3 20.3-71.4 32.7-108.7 36.2-9.7.9-15.6 11.3-11.6 20.2 6.2 13.9 11.1 28.6 14.7 43.8 3.6 15.2-5.3 30.6-20.2 35.1-14.9 4.5-30.1 7.6-45.3 9.1-9.7 1-15.7 11.3-11.7 20.2 15 32.8 22.9 69.5 23 107.7.1 14.4 15.2 23.1 27.6 16 33.2-19 68.9-30.5 104.8-33.9 9.7-.9 15.6-11.3 11.6-20.2-6.2-13.9-11.1-28.6-14.7-43.8-3.6-15.2 5.3-30.6 20.2-35.1 14.9-4.5 30.1-7.6 45.3-9.1 9.7-1 15.7-11.3 11.7-20.2-15.5-34.2-23.3-72.5-22.9-112.3zM435 365.6c-15.2-1.6-30.3-4.7-45.3-9.1-14.9-4.5-23.8-19.9-20.2-35.1 3.6-15.2 8.5-29.8 14.7-43.8 4-8.9-1.9-19.3-11.6-20.2-37.3-3.5-74.4-15.9-108.7-36.2-10.7-6.3-23.9 1.4-23.8 13.7 0 1.6-.2 3.2-.2 4.9.2 33.3 7 65.7 19.9 94 5.7 12.4 5.2 26.6-.6 38.9 4.9 1.2 9.9 2.2 14.8 3.7 14.9 4.5 23.8 19.9 20.2 35.1-3.6 15.2-8.5 29.8-14.7 43.8-4 8.9 1.9 19.3 11.6 20.2 35.9 3.4 71.6 14.9 104.8 33.9 12.5 7.1 27.6-1.6 27.6-16 .2-38.2 8-75 23-107.7 4.3-8.7-1.8-19.1-11.5-20.1z"
+                                    class=""></path>
+                            </svg> Эффект</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="palCreate.html"><svg style="width:18px; height:18px;"
+                                aria-hidden="true" focusable="false" data-prefix="fas" data-icon="palette" role="img"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                                class="svg-inline--fa fa-palette fa-w-16 fa-3x">
+                                <path fill="currentColor"
+                                    d="M204.3 5C104.9 24.4 24.8 104.3 5.2 203.4c-37 187 131.7 326.4 258.8 306.7 41.2-6.4 61.4-54.6 42.5-91.7-23.1-45.4 9.9-98.4 60.9-98.4h79.7c35.8 0 64.8-29.6 64.9-65.3C511.5 97.1 368.1-26.9 204.3 5zM96 320c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm32-128c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128-64c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128 64c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"
+                                    class=""></path>
+                            </svg> Палитра</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container my-2">
+        <h5>Калибровка елки</h5>
+        <div class="row">
+            <div class="col placeholder-wave load">
+                <div class="row">
+                    <div class="col" style="max-width: 135px;">
+                        <a class="btn btn-primary disabled placeholder w-100 mb-4"></a>
+                        <span class="placeholder w-100 mb-4"></span>
+                        <span class="placeholder w-100 mb-4"></span>
+                        <a class="btn btn-primary disabled placeholder w-100 my-3"></a>
+                    </div>
+                    <div class="col">
+                        <span class="placeholder w-75 mb-3"></span>
+                        <a class="btn btn-outline-secondary placeholder mb-4 w-100"></a>
+                        <span class="placeholder w-75 mb-3"></span>
+                        <a class="btn btn-outline-secondary placeholder mb-4 w-100"></a>
+                        <span class="placeholder w-75 mb-3"></span>
+                        <a class="btn btn-outline-secondary placeholder mb-4 w-100"></a>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-primary disabled placeholder"></a>
+                    <a class="btn btn-primary disabled placeholder"></a>
+                </div>
+            </div>
+            <div class="col d-none loaded">
+                <form action="calibrate" method="post" data-ajax="true">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-column me-3">
+                            <div class="nav flex-column nav-pills" id="v-pills-tab"></div>
+                            <button id="new_round" type="button" class="btn btn-primary my-3">+&nbsp;Добавить</button>
+                        </div>
+                        <div class="tab-content" id="v-pills-tabContent"></div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <input class="btn btn-primary" name="test" type="submit" value="Тест" />
+                        <input class="btn btn-primary" name="save" type="submit" value="Сохранить" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setTimeout(function () {
+                $.get("calibration.json")
+                    .done(function () {
+                        alert("second success");
+                    })
+                    .fail(function () {
+                        var new_tab_id = addRound(1);
+                        $('#v-pills-tab button[data-bs-target="#' + new_tab_id + '"]').tab('show');
+                    })
+                    .always(function() {
+                        $('.load').addClass('d-none');
+                        $('.loaded').removeClass('d-none');
+                    });
+            }, 800);
+
+            $('#new_round').click(function () {
+                var last_r_id = $('#v-pills-tab').children().last().attr('data-bs-target');
+                var last_r = parseInt(last_r_id ? last_r_id.substr(2) : 0);
+                var new_tab_id = addRound(++last_r);
+                $('#v-pills-tab button[data-bs-target="#' + new_tab_id + '"]').tab('show');
+            });
+            $('body').on('click', '.btn-sub, .btn-add', function () {
+                var k = $(this).hasClass('btn-add') ? 1 : -1;
+                var inp = $(this).parent().children('input');
+                var value = parseInt($(inp).val());
+                if (value > 0) {
+                    value += k;
+                    $(inp).val(value);
+                }
+            });
+
+            function addRound(numb) {
+                var link = $('<button>', {
+                    class: 'nav-link',
+                    type: 'button',
+                    'data-bs-toggle': 'pill',
+                    'data-bs-target': '#r' + numb,
+                    text: 'Круг\u00A0' + numb
+                });
+
+                var tab = $('<div>', {
+                    class: 'tab-pane fade',
+                    id: 'r' + numb
+                });
+                $(tab).append(Editor('Количество светодиодов', 'r_with', 20));
+                $(tab).append(Editor('Ближний к окну светодиод', 'r_azimuth', 10));
+                $(tab).append(Editor('Позиция строки на окне', 'r_ypos', 10));
+
+                $('#v-pills-tab').append(link);
+                $('#v-pills-tabContent').append(tab);
+                return 'r' + numb;
+                function Editor(text, inputName, inputValue) {
+                    return $('<div>', {
+                        class: 'mb-3',
+                        append: $('<label>', {
+                            class: 'form-label',
+                            text: text
+                        }).add('<div>', {
+                            class: 'input-group',
+                            append: $('<input>', {
+                                name: inputName,
+                                value: inputValue,
+                                min: 1,
+                                class: 'form-control'
+                            })
+                                .add('<button class="btn btn-outline-secondary btn-sub" type="button">-</button>')
+                                .add('<button class="btn btn-outline-secondary btn-add" type="button">+</button>')
+                        })
+                    });
+                };
+            };
+        });
+    </script>
+</body>
+
+</html>

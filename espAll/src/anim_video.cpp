@@ -94,7 +94,7 @@ void TreeCalculate()
 
 void Anim::animVideo_SetUp() {
   //затемняем
-  for (uint16_t i = 0; i < LEDS; i++) {
+  for (uint16_t i = 0; i < LEDS_ALL; i++) {
     leds[i] = Color();
   }
 

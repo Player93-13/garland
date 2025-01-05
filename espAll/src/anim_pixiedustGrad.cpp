@@ -12,7 +12,7 @@ void Anim::animPixieDustGrad_SetUp() {
     if (inc > 0) {
         phase = -DUST_LENGTH/2;
     } else {
-        phase = LEDS + DUST_LENGTH/2;
+        phase = LEDS_ALL + DUST_LENGTH/2;
     }
     glowSetUp();
 }
@@ -20,24 +20,24 @@ void Anim::animPixieDustGrad_SetUp() {
 void Anim::animPixieDustGrad_Run() {
 
     if (inc > 0) {
-        for (int i=0;i<LEDS;i++) {
+        for (int i=0;i<LEDS_ALL;i++) {
             leds[i] = (i > phase) ? GetGradientColor(i, prevColorOffset, palCut) : GetGradientColor(i, curColorOffset, palCut);
             glowForEachLed(i);
         }
         phase++;
-        if (phase >= 4*LEDS) {
+        if (phase >= 4*LEDS_ALL) {
             phase = -DUST_LENGTH/2;
             prevColorOffset = curColorOffset;
             curColorOffset = (float)rngb()/256;    
         }
     } else {
-        for (int i=0;i<LEDS;i++) {
+        for (int i=0;i<LEDS_ALL;i++) {
             leds[i] = (i < phase) ? GetGradientColor(i, prevColorOffset, palCut) : GetGradientColor(i, curColorOffset, palCut);
             glowForEachLed(i);
         }
         phase--;
-        if (phase <= -3*LEDS) {
-            phase = LEDS + DUST_LENGTH/2;
+        if (phase <= -3*LEDS_ALL) {
+            phase = LEDS_ALL + DUST_LENGTH/2;
             prevColorOffset = curColorOffset;
             curColorOffset = rngb();    
         }
@@ -45,7 +45,7 @@ void Anim::animPixieDustGrad_Run() {
     glowRun();
     
     for (int k = phase-DUST_LENGTH/2; k < (phase + DUST_LENGTH/2); k++ ) {
-        if (k >= 0 && k < LEDS) {
+        if (k >= 0 && k < LEDS_ALL) {
             int mix = abs(k-phase) * 255 / DUST_LENGTH + random(-100, 100);
             if (mix < 0) { 
                 mix = 0;
