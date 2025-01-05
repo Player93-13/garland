@@ -44,6 +44,8 @@
             textBox1 = new TextBox();
             groupBox2 = new GroupBox();
             label11 = new Label();
+            chb_fpsLimit = new CheckBox();
+            tb_fpsLimit = new TextBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             groupBox2.SuspendLayout();
@@ -129,11 +131,11 @@
             // 
             // groupBox2
             // 
-            resources.ApplyResources(groupBox2, "groupBox2");
             groupBox2.Controls.Add(label1);
             groupBox2.Controls.Add(label2);
             groupBox2.Controls.Add(label3);
             groupBox2.Controls.Add(label5);
+            resources.ApplyResources(groupBox2, "groupBox2");
             groupBox2.Name = "groupBox2";
             groupBox2.TabStop = false;
             // 
@@ -142,10 +144,25 @@
             resources.ApplyResources(label11, "label11");
             label11.Name = "label11";
             // 
+            // chb_fpsLimit
+            // 
+            chb_fpsLimit.Checked = true;
+            chb_fpsLimit.CheckState = CheckState.Checked;
+            resources.ApplyResources(chb_fpsLimit, "chb_fpsLimit");
+            chb_fpsLimit.Name = "chb_fpsLimit";
+            chb_fpsLimit.UseVisualStyleBackColor = true;
+            // 
+            // tb_fpsLimit
+            // 
+            resources.ApplyResources(tb_fpsLimit, "tb_fpsLimit");
+            tb_fpsLimit.Name = "tb_fpsLimit";
+            // 
             // Form1
             // 
             resources.ApplyResources(this, "$this");
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(tb_fpsLimit);
+            Controls.Add(chb_fpsLimit);
             Controls.Add(label11);
             Controls.Add(groupBox2);
             Controls.Add(label10);
@@ -186,5 +203,7 @@
         private TextBox textBox1;
         private GroupBox groupBox2;
         private Label label11;
+        private CheckBox chb_fpsLimit;
+        private TextBox tb_fpsLimit;
     }
 }
