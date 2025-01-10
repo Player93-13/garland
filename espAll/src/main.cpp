@@ -9,6 +9,7 @@
 #include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 #include "anim.h"
 #include "web.h"
+#include <ArduinoOTA.h>
 
 typedef signed char         sint8_t;
 
@@ -32,6 +33,7 @@ void setup() {
   if (wm.autoConnect("GarlandSetup")) {
     Serial.println("connected...yeey :)");
     WebServerSetup();
+    ArduinoOTA.begin();
   }
   else {
     Serial.println("Configportal running");
@@ -44,4 +46,5 @@ void setup() {
 void loop(void) {
   //wm.process();
   anim.run();
+  ArduinoOTA.handle();
 }
