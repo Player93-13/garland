@@ -1,7 +1,3 @@
-#define FASTLED_RMT5_RECYCLE 1
-//#define FASTLED_LED_OVERCLOCK 1.2
-//#define FASTLED_ALL_PINS_HARDWARE_SPI 1
-
 #include <FastLED.h>
 #include "color.h"
 #include "palette.h"
@@ -10,9 +6,6 @@
 
 extern LastState State;
 
-//Adafruit's class to operate strip
-//Adafruit_NeoPixel pixels = Adafruit_NeoPixel(GARL + STAR, PIN, NEO_GRB + NEO_KHZ800);
-//Adafruit_NeoPixel pixels_wall = Adafruit_NeoPixel(WALL, PIN_WALL, NEO_GRB + NEO_KHZ800);
 
 Color PalCustom_ [64];
 Palette PalCustom = { 1, PalCustom_ };
@@ -34,9 +27,6 @@ Palette * pals[PALS] = {&PalRgb, &PalRainbow, &PalRainbowStripe, &PalParty, &Pal
 Anim::Anim()
 {
   nextms = millis();
-#ifdef DEBUG
-  secTime = nextms;
-#endif
 }
 
 void Anim::setPeriod(byte period) {
@@ -48,7 +38,6 @@ void Anim::setPalette(Palette * pal) {
   if (setUpOnPalChange) {
     setUp();
   }
-  //pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void Anim::setPaletteById(int id)
@@ -76,10 +65,6 @@ bool Anim::run()
   {
     Serial.print("fps: ");
     Serial.println(frames);
-    #ifdef DEBUG
-    Serial.println(transms);
-    Serial.println(millis());
-    #endif
     frames = 0;
     secTime += 1000;
   }
@@ -113,26 +98,20 @@ bool Anim::run()
       c = c.interpolate(leds_prev[i], transc);
     }
 
-    //c.setbrightness(i < GARL ? BRIGHTNESS : i < GARL + STAR ? STARBRIGHTNESS : WALLBRIGHTNESS);
     if (!runWallVideo) {
       c.gammaCorrection();
     }
 
-    leds_FastLed[i] = CRGB(c.r, c.g, c.b);
-
-    // if (i < GARL)
-    //   pixels.setPixelColor(i, pixels.Color(c.r, c.g, c.b));
-    // else if (i >= GARL && i < STAR + GARL)
-    //   pixels.setPixelColor((STAR + GARL) - (i - GARL) - 1, pixels.Color(c.g, c.r, c.b));
-    // else if (i >= STAR + GARL)
-    // {
-    //   //if (!runWallVideo) {
-    //     //c.setbrightness(WALLBRIGHTNESS);
-    //   //}
-    //   pixels_wall.setPixelColor(i - (STAR + GARL), pixels.Color(c.r, c.g, c.b));
-    // }
+    if(i >= GARL && i < STAR + GARL) //смена порядка цветов, и обратный ход для звезды
+    {
+      leds_FastLed[(STAR + GARL) - (i - GARL) - 1] = CRGB(c.g, c.r, c.b);
+    }
+    else
+    {
+      leds_FastLed[i] = CRGB(c.r, c.g, c.b);
+    }
   }
-
+  
   FastLED.show();
 
   return true;
@@ -140,11 +119,9 @@ bool Anim::run()
 
 void Anim::setUp()
 {
-  //pinMode(LED_BUILTIN, OUTPUT);
   transms = millis() + TRANSITION_MS;
 
   //switch operation buffers (for transition to operate)
-
   if (leds == leds1) {
     leds = leds2;
   } else {
@@ -261,12 +238,12 @@ Anim anim = Anim();
 
 void AnimSetup()
 {
-  FastLED.addLeds<NEOPIXEL, PIN_ORANGE_1>(leds_FastLed, 0, GARL1);
-  FastLED.addLeds<NEOPIXEL, PIN_ORANGE_2>(leds_FastLed, GARL + STAR, WALL);
-  
-  FastLED.addLeds<NEOPIXEL, PIN_GREEN_1>(leds_FastLed, GARL1 + GARL2, GARL3);
-  FastLED.addLeds<NEOPIXEL, PIN_BLUE_1>(leds_FastLed, GARL1, GARL2);
-  FastLED.addLeds<APA106, PIN_BROWN_1>(leds_FastLed, GARL, STAR);
+  FastLED.addLeds<APA106, PIN_ORANGE_2, GRB>(leds_FastLed, GARL + STAR, WALL);
+  FastLED.addLeds<APA106, PIN_ORANGE_1, GRB>(leds_FastLed, 0, GARL1);
+  FastLED.addLeds<APA106, PIN_BLUE_1, GRB>(leds_FastLed, GARL1, GARL2);
+  FastLED.addLeds<APA106, PIN_GREEN_1, GRB>(leds_FastLed, GARL1 + GARL2, GARL3 + STAR);
+
+  //FastLED.addLeds<APA106, PIN_BROWN_1>(leds_FastLed, GARL, STAR);
   
   LoadConfig();
   anim.setAnim(State.animId);
