@@ -7,9 +7,13 @@
 
 LastState State = LastState();
 
+// калибровка елки
+TreeRound rounds[256];
+uint8_t rounds_count;
+
 void LoadConfig()
 {
-  File _f = LittleFS.open(LastStateFileName, "r");
+  File _f = LittleFS.open(LastStateFileName, FILE_READ);
   JsonDocument _doc;
   DeserializationError _error = deserializeJson(_doc, _f);
 #ifdef DEBUG
@@ -33,7 +37,7 @@ void LoadConfig()
 void SaveConfig()
 {
   LittleFS.remove(LastStateFileName);
-  File _f = LittleFS.open(LastStateFileName, "w");
+  File _f = LittleFS.open(LastStateFileName, FILE_WRITE);
   if (!_f) {
 #ifdef DEBUG
     Serial.println(F("Failed to create file"));
@@ -50,5 +54,13 @@ void SaveConfig()
     Serial.println(F("Failed to write to file"));
 #endif
   }
+  _f.close();
+}
+
+void SaveCalibration(uint8_t *data, size_t len)
+{
+  LittleFS.remove(CalibrationFileName);
+  File _f = LittleFS.open(CalibrationFileName, FILE_WRITE);
+  _f.write(data, len);
   _f.close();
 }

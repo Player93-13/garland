@@ -14,7 +14,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
         integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
         crossorigin="anonymous"></script>
-    <script src="js/unobtr.js"></script>
 </head>
 
 <body>
@@ -79,7 +78,7 @@
                 </div>
             </div>
             <div class="col d-none loaded">
-                <form action="calibrate" method="post" data-ajax="true">
+                <form id="form_rounds">
                     <div class="d-flex align-items-start">
                         <div class="flex-column me-3">
                             <div class="nav flex-column nav-pills" id="v-pills-tab"></div>
@@ -88,7 +87,6 @@
                         <div class="tab-content" id="v-pills-tabContent"></div>
                     </div>
                     <div class="d-grid gap-2">
-                        <input class="btn btn-primary" name="test" type="submit" value="Тест" />
                         <input class="btn btn-primary" name="save" type="submit" value="Сохранить" />
                     </div>
                 </form>
@@ -97,38 +95,102 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
-            setTimeout(function () {
-                $.get("calibration.json")
-                    .done(function () {
-                        alert("second success");
-                    })
-                    .fail(function () {
-                        var new_tab_id = addRound(1);
-                        $('#v-pills-tab button[data-bs-target="#' + new_tab_id + '"]').tab('show');
-                    })
-                    .always(function() {
-                        $('.load').addClass('d-none');
-                        $('.loaded').removeClass('d-none');
+            $.get("/calibration.json")
+                .done(function (data) {
+                    var new_tab_id;
+                    $(data).each(function (i, e) {
+                        new_tab_id = addRound(i + 1, e.r_width, e.r_azimuth, e.r_ypos);
                     });
-            }, 800);
+                    if (!new_tab_id) {
+                        new_tab_id = addRound();
+                    }
+                    $('#v-pills-tab button[data-bs-target="#' + new_tab_id + '"]').tab('show');
+                    Post();
+                })
+                .fail(function () {
+                    var new_tab_id = addRound();
+                    $('#v-pills-tab button[data-bs-target="#' + new_tab_id + '"]').tab('show');
+                })
+                .always(function () {
+                    $('.load').addClass('d-none');
+                    $('.loaded').removeClass('d-none');
+                });
+
+            $("#form_rounds").on("submit", function (event) {
+                event.preventDefault();
+                Post('/calibrate_save');
+            });
+
+            function Post(uri = '/calibrate') {
+                var formData = $('#form_rounds').serializeArray();
+                var returnArray = [];
+                for (var i = 0; i < formData.length; i += 3) {
+                    var round = {};
+                    round[formData[i]['name']] = Number(formData[i]['value']);
+                    round[formData[i + 1]['name']] = Number(formData[i + 1]['value']);
+                    round[formData[i + 2]['name']] = Number(formData[i + 2]['value']);
+                    returnArray.push(round);
+                }
+                $.ajax({
+                    url: uri,
+                    type: "POST",
+                    dataType: 'json',
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify(returnArray),
+                    success: function (result) {
+                        //console.log(result);
+                    },
+                    error: function (xhr, resp, text) {
+                        //console.log(xhr, resp, text);
+                    }
+                })
+            }
 
             $('#new_round').click(function () {
+                var new_tab_id;
                 var last_r_id = $('#v-pills-tab').children().last().attr('data-bs-target');
                 var last_r = parseInt(last_r_id ? last_r_id.substr(2) : 0);
-                var new_tab_id = addRound(++last_r);
+
+                if (last_r > 0) {
+                    var last_r_width = $(last_r_id + ' input[name="r_width"]').val();
+                    var last_r_azimuth = $(last_r_id + ' input[name="r_azimuth"]').val();
+                    var last_r_ypos = $(last_r_id + ' input[name="r_ypos"]').val();
+                    var new_tab_id = addRound(++last_r, last_r_width, last_r_azimuth, last_r_ypos);
+                }
+                else {
+                    new_tab_id = addRound(++last_r);
+                }
+
                 $('#v-pills-tab button[data-bs-target="#' + new_tab_id + '"]').tab('show');
+                Post();
             });
+
             $('body').on('click', '.btn-sub, .btn-add', function () {
                 var k = $(this).hasClass('btn-add') ? 1 : -1;
                 var inp = $(this).parent().children('input');
                 var value = parseInt($(inp).val());
-                if (value > 0) {
-                    value += k;
+                var min = parseInt($(inp).attr('min')) || 0;
+                var max = parseInt($(inp).attr('max')) || 0xFFFF;
+                value += k;
+                if (value >= min && value <= max) {
                     $(inp).val(value);
+                    $(inp).change();
                 }
             });
 
-            function addRound(numb) {
+            $('body').on('change', 'input', function () {
+                if ($(this).attr('name') == 'r_width') {
+                    var value = parseInt($(this).val());
+                    var r_azimuth = $(this).closest('.tab-pane').find('input[name="r_azimuth"]');
+                    r_azimuth.attr('max', --value);
+                    if (parseInt($(r_azimuth).val()) > value) {
+                        $(r_azimuth).val(value);
+                    }
+                }
+                Post();
+            });
+
+            function addRound(numb = 1, r_width = 20, r_azimuth = 10, r_ypos = 10) {
                 var link = $('<button>', {
                     class: 'nav-link',
                     type: 'button',
@@ -141,14 +203,14 @@
                     class: 'tab-pane fade',
                     id: 'r' + numb
                 });
-                $(tab).append(Editor('Количество светодиодов', 'r_with', 20));
-                $(tab).append(Editor('Ближний к окну светодиод', 'r_azimuth', 10));
-                $(tab).append(Editor('Позиция строки на окне', 'r_ypos', 10));
+                $(tab).append(Editor('Количество светодиодов', 'r_width', r_width, 1));
+                $(tab).append(Editor('Ближний к окну светодиод', 'r_azimuth', r_azimuth, 0, r_width));
+                $(tab).append(Editor('Позиция строки на окне', 'r_ypos', r_ypos));
 
                 $('#v-pills-tab').append(link);
                 $('#v-pills-tabContent').append(tab);
                 return 'r' + numb;
-                function Editor(text, inputName, inputValue) {
+                function Editor(text, inputName, inputValue, minval = 0, maxval = 0xFFFF) {
                     return $('<div>', {
                         class: 'mb-3',
                         append: $('<label>', {
@@ -159,7 +221,9 @@
                             append: $('<input>', {
                                 name: inputName,
                                 value: inputValue,
-                                min: 1,
+                                type: 'number',
+                                min: minval,
+                                max: maxval,
                                 class: 'form-control'
                             })
                                 .add('<button class="btn btn-outline-secondary btn-sub" type="button">-</button>')

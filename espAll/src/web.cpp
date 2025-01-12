@@ -5,6 +5,7 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncUDP.h>
 #endif
+#include "AsyncJson.h"
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 #include <ESPAsyncWebServer.h>
@@ -12,26 +13,30 @@
 #include "anim.h"
 #include "config.h"
 
-String JSONpalFile = "/pallete.json";
+#define JSONpalFile "/pallete.json"
 
 extern Anim anim;
 extern Palette PalCustom;
-extern Color PalCustom_ [];
-extern uint8_t wallBytes [];
+extern Color PalCustom_[];
+extern uint8_t wallBytes[];
 extern bool wallBytesReady;
 extern bool runWallVideo;
 extern LastState State;
+extern TreeRound rounds[];
+extern uint8_t rounds_count;
 
-AsyncWebServer server(80);    // Create a webserver object that listens for HTTP request on port 80
+AsyncWebServer server(80); // Create a webserver object that listens for HTTP request on port 80
 AsyncWebSocket ws("/ws");
 AsyncUDP udp;
 
 void handleSendCommand(AsyncWebServerRequest *request);
 void handleNewPal(AsyncWebServerRequest *request);
 void handleDelPal(AsyncWebServerRequest *request);
+void handleCalibrate(AsyncWebServerRequest *request);
+void handleCalibrateBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total);
 void addNePalToFile(long id, String palName, String colors);
 void deletePal(int id);
-void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
+void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
 void wsRunColor(uint8_t *payload);
 
 void WebServerSetup()
@@ -40,28 +45,24 @@ void WebServerSetup()
     udp.onPacket([](AsyncUDPPacket packet) {
       memcpy(&wallBytes, packet.data(), packet.length());
       wallBytesReady = true;
-    });
+      });
   }
 
-  server.on("/heap", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send(200, "text/plain", String(ESP.getFreeHeap()));
-  });
-
-  server.serveStatic("/pallete.json", LittleFS, "/pallete.json").setCacheControl("no-cache");
+  server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/plain", String(ESP.getFreeHeap())); });
+  server.serveStatic(JSONpalFile, LittleFS, JSONpalFile).setCacheControl("no-cache");
+  server.serveStatic(CalibrationFileName, LittleFS, CalibrationFileName).setCacheControl("no-cache");
   server.serveStatic("/", LittleFS, "/").setDefaultFile("index.html").setCacheControl("max-age=604800");
-
-  server.onNotFound([](AsyncWebServerRequest * request) {
-    request->send(404);
-  });
-
+  server.onNotFound([](AsyncWebServerRequest *request) { request->send(404); });
   server.on("/effset", HTTP_POST, handleSendCommand);
   server.on("/newpal", HTTP_POST, handleNewPal); // Создание новой палитры
   server.on("/delpal", HTTP_POST, handleDelPal); // Удаление custom - палитры
+  server.on("/calibrate", HTTP_POST, handleCalibrate, nullptr, handleCalibrateBody);
+  server.on("/calibrate_save", HTTP_POST, handleCalibrate, nullptr, handleCalibrateBody);
 
   ws.onEvent(onWsEvent);
   server.addHandler(&ws);
 
-  server.begin();                           // Actually start the server
+  server.begin(); // Actually start the server
 #ifdef DEBUG
   Serial.println("HTTP server started");
 #endif
@@ -78,7 +79,7 @@ int char2int(char input)
   return 0;
 }
 
-void hex2bin(const char* src, byte* target)
+void hex2bin(const char *src, byte *target)
 {
   while (*src && src[1])
   {
@@ -87,10 +88,11 @@ void hex2bin(const char* src, byte* target)
   }
 }
 
-void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len) {
+void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
+{
   if (type == WS_EVT_DATA)
   {
-    AwsFrameInfo * info = (AwsFrameInfo*)arg;
+    AwsFrameInfo *info = (AwsFrameInfo *)arg;
     if (info->final && info->index == 0 && info->len == len)
     {
       if (info->opcode == WS_TEXT)
@@ -102,28 +104,6 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
         }
       }
     }
-    //    else
-    //    {
-    //      //message is comprised of multiple frames or the frame is split into multiple packets
-    //      if (info->message_opcode != WS_TEXT)
-    //      {
-    //        if (info->index < WALL_WIDTH * WALL_HEIGHT * 3 + 1)
-    //        {
-    //          memcpy(&wallBytes[info->index], data, len);
-    //        }
-    //      }
-    //
-    //      if ((info->index + len) == info->len)
-    //      {
-    //        if (info->final)
-    //        {
-    //          if (info->message_opcode != WS_TEXT)
-    //          {
-    //            wallBytesReady = true;
-    //          }
-    //        }
-    //      }
-    //    }
   }
 }
 
@@ -263,6 +243,34 @@ void handleDelPal(AsyncWebServerRequest *request)
   }
 
   request->send(400);
+}
+
+void handleCalibrate(AsyncWebServerRequest *request)
+{
+
+}
+
+void handleCalibrateBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+{
+  JsonDocument _doc;
+  deserializeJson(_doc, data);
+  rounds_count = _doc.size();
+  for (int i = 0; i < _doc.size(); i++)
+  {
+    rounds[i].r_width = _doc[i]["r_width"];
+    rounds[i].r_azimuth = _doc[i]["r_azimuth"];
+    rounds[i].r_ypos = _doc[i]["r_ypos"];
+  }
+
+  if (request->url() == "/calibrate_save")
+  {
+    SaveCalibration(data, len);
+    request->redirect("/");
+    return;
+  }
+
+  anim.setAnim(ANIM_CALIBRATE_ID);
+  request->send(200);
 }
 
 void addNePalToFile(long id, String palName, String colors)

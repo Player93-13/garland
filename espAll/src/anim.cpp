@@ -6,7 +6,6 @@
 
 extern LastState State;
 
-
 Color PalCustom_ [64];
 Palette PalCustom = { 1, PalCustom_ };
 
@@ -201,6 +200,11 @@ void Anim::setAnim(byte animInd)
       runImpl = &Anim::animVideo_Run;
       setUpOnPalChange = true;
       runWallVideo = true;
+      break;
+    case ANIM_CALIBRATE_ID:
+      setUpImpl = &Anim::animCalibrate_SetUp;
+      runImpl = &Anim::animCalibrate_Run;
+      setUpOnPalChange = true;
       break;
     default:
       setUpImpl = &Anim::animOff_SetUp;

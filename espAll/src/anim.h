@@ -31,6 +31,7 @@
 #define ANIMS 9 //number of animations
 #define PALS 8 //number of palettes
 #define PALCUSTOM_ID 7
+#define ANIM_CALIBRATE_ID 98
 #define ANIM_VIDEO_ID 99
 #define ANIM_FILL_ID 100
 
@@ -155,6 +156,9 @@ class Anim {
     void animVideo_SetUp();
     void animVideo_Run();
 
+    void animCalibrate_SetUp();
+    void animCalibrate_Run();
+
     Color GetGradientColor(int pos, uint8_t colorOffset, int paletteCut);
 
   public:
@@ -166,7 +170,7 @@ class Anim {
     bool run();//returns true if actual change has completed, or false if it's dummy call (previous call was too recent in time)
     void doSetUp();
 
-    Color getMatrix(int i, int j);    
+    Color getMatrix(int i, int j);
 };
 
 unsigned int rng();
