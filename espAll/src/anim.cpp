@@ -190,6 +190,26 @@ void Anim::setAnim(byte animInd)
       runImpl = &Anim::animSpread_Run;
       setUpOnPalChange = true;
       break;
+    case 9:
+      setUpImpl = &Anim::animAurora_SetUp;
+      runImpl = &Anim::animAurora_Run;
+      setUpOnPalChange = true;
+      break;
+    case 10:
+      setUpImpl = &Anim::animWarmHug_SetUp;
+      runImpl = &Anim::animWarmHug_Run;
+      setUpOnPalChange = true;
+      break;
+    case 11:
+      setUpImpl = &Anim::animFallingSnow_SetUp;
+      runImpl = &Anim::animFallingSnow_Run;
+      setUpOnPalChange = true;
+      break;
+    case 12:
+      setUpImpl = &Anim::animHeartbeat_SetUp;
+      runImpl = &Anim::animHeartbeat_Run;
+      setUpOnPalChange = true;
+      break;
     case ANIM_FILL_ID:
       setUpImpl = &Anim::animFill_SetUp;
       runImpl = &Anim::animFill_Run;

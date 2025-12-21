@@ -28,7 +28,7 @@
 #define STARBRIGHTNESS 215
 #define WALLBRIGHTNESS 215
 
-#define ANIMS 9 //number of animations
+#define ANIMS 13 //number of animations
 #define PALS 8 //number of palettes
 #define PALCUSTOM_ID 7
 #define ANIM_CALIBRATE_ID 98
@@ -146,6 +146,18 @@ class Anim {
 
     void animFly_SetUp();
     void animFly_Run();
+
+    void animAurora_SetUp();
+    void animAurora_Run();
+
+    void animWarmHug_SetUp();
+    void animWarmHug_Run();
+
+    void animFallingSnow_SetUp();
+    void animFallingSnow_Run();
+
+    void animHeartbeat_SetUp();
+    void animHeartbeat_Run();
 
     void animOff_SetUp();
     void animOff_Run();
