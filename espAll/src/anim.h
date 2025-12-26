@@ -2,26 +2,16 @@
 #define anim_h
 #include "palette.h"
 
-// #define PIN_ORANGE_1 4  // garl 1
-// #define PIN_BLUE_1 2    // garl 2
-// #define PIN_GREEN_1 8   // garl 3
-// #define PIN_BROWN_1 10  // star
-// #define PIN_ORANGE_2 36 // wall
-// #define PIN_BLUE_2 38
-// #define PIN_GREEN_2 21
-// #define PIN_BROWN_2 17
-// #define PIN_PS_ON 14 // power switch
-
 #if CONFIG_IDF_TARGET_ESP32
 #define PIN_ORANGE_1 32  // garl 1
 #define PIN_BLUE_1 25    // garl 2
 #define PIN_GREEN_1 17   // garl 3
-#define PIN_BROWN_1 16  // star
-#define PIN_ORANGE_2 18 // wall
+#define PIN_BROWN_1 16   // star
+#define PIN_ORANGE_2 18  // wall
 #define PIN_BLUE_2 26
 #define PIN_GREEN_2 33
 #define PIN_BROWN_2 34
-#define PIN_PS_ON 22 // power switch
+#define PIN_PS_ON 22     // power switch
 
 #elif CONFIG_IDF_TARGET_ESP32S2
 #define PIN_ORANGE_1 4  // garl 1
@@ -32,7 +22,7 @@
 #define PIN_BLUE_2 38
 #define PIN_GREEN_2 21
 #define PIN_BROWN_2 17
-#define PIN_PS_ON 14 // power switch
+#define PIN_PS_ON 14    // power switch
 #endif
 
 #define GARL1 400
