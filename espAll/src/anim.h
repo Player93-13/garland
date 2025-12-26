@@ -3,15 +3,15 @@
 #include "palette.h"
 
 #if CONFIG_IDF_TARGET_ESP32
-#define PIN_ORANGE_1 32  // garl 1
-#define PIN_BLUE_1 25    // garl 2
-#define PIN_GREEN_1 17   // garl 3
-#define PIN_BROWN_1 16   // star
-#define PIN_ORANGE_2 18  // wall
+#define PIN_ORANGE_1 32 // garl 1
+#define PIN_BLUE_1 25   // garl 2
+#define PIN_GREEN_1 17  // garl 3
+#define PIN_BROWN_1 16  // star
+#define PIN_ORANGE_2 18 // wall
 #define PIN_BLUE_2 26
 #define PIN_GREEN_2 33
 #define PIN_BROWN_2 34
-#define PIN_PS_ON 22     // power switch
+#define PIN_PS_ON 22 // power switch
 
 #elif CONFIG_IDF_TARGET_ESP32S2
 #define PIN_ORANGE_1 4  // garl 1
@@ -22,7 +22,7 @@
 #define PIN_BLUE_2 38
 #define PIN_GREEN_2 21
 #define PIN_BROWN_2 17
-#define PIN_PS_ON 14    // power switch
+#define PIN_PS_ON 14 // power switch
 #endif
 
 #define GARL1 400
@@ -32,16 +32,18 @@
 #define STAR 11
 #define WALL_WIDTH 16
 #define WALL_HEIGHT 25
+#define VIDEO_WIDTH 16
+#define VIDEO_HEIGHT 28
 #define WALL (WALL_WIDTH * WALL_HEIGHT + 1)
 #define WALL_OFFSET (GARL + STAR + 1)
-#define LEDS_ALL (GARL + STAR + WALL)  // number of LEDs in the strip.
+#define LEDS_ALL (GARL + STAR + WALL) // number of LEDs in the strip.
 
-#define BRIGHTNESS 255// brightness adjustment, up to 255
+#define BRIGHTNESS 255 // brightness adjustment, up to 255
 #define STARBRIGHTNESS 215
 #define WALLBRIGHTNESS 215
 
-#define ANIMS 13 //number of animations
-#define PALS 8 //number of palettes
+#define ANIMS 13 // number of animations
+#define PALS 8   // number of palettes
 #define PALCUSTOM_ID 7
 #define ANIM_CALIBRATE_ID 98
 #define ANIM_VIDEO_ID 99
@@ -52,149 +54,173 @@
 // brigthness animation amplitude shift. true BrA amplitude is calculated as (0..127) value shifted right by this amount
 #define BRA_AMP_SHIFT 1
 // brigthness animation amplitude offset
-#define BRA_OFFSET (255-80)
+#define BRA_OFFSET (255 - 80)
 
-//probability of spark when in idle plase
+// probability of spark when in idle plase
 #define SPARK_PROB 3
 
-class Anim {
+class Anim
+{
 
-  private:
-    //Color arrays - two for making transition
-    static Color leds1[LEDS_ALL];
-    static Color leds2[LEDS_ALL];
-    //auxiliary colors array
-    static Color ledstmp[LEDS_ALL];
-    
-    void animStart();
+private:
+  // Color arrays - two for making transition
+  static Color leds1[LEDS_ALL];
+  static Color leds2[LEDS_ALL];
+  // auxiliary colors array
+  static Color ledstmp[LEDS_ALL];
 
-    // length of animation timeslot (period)
-    byte period;
-    // array of Color to work with
-    Color *leds;
-    Palette *palette;
+  void animStart();
 
-    // millis for next timeslot
-    unsigned long nextms;
-    // millis to transition end
-    unsigned long transms;
+  // length of animation timeslot (period)
+  byte period;
+  // array of Color to work with
+  Color *leds;
+  Palette *palette;
 
-    int phase;
-    int pos;
-    int inc;
-    int palCut;
+  // millis for next timeslot
+  unsigned long nextms;
+  // millis to transition end
+  unsigned long transms;
 
-    bool off;
+  int phase;
+  int pos;
+  int inc;
+  int palCut;
 
-    //whether to call SetUp on palette change
-    //(some animations require full transition with fade, otherwise the colors would change in a step, some not)
-    bool setUpOnPalChange;
+  bool off;
 
-    Color curColor = Color(0);
-    Color prevColor = Color(0);
-    uint8_t curColorOffset = 127;
-    uint8_t prevColorOffset = 0;
+  // whether to call SetUp on palette change
+  //(some animations require full transition with fade, otherwise the colors would change in a step, some not)
+  bool setUpOnPalChange;
 
-    Color sparkleColor = Color(0xFFFFFF);
+  Color curColor = Color(0);
+  Color prevColor = Color(0);
+  uint8_t curColorOffset = 127;
+  uint8_t prevColorOffset = 0;
 
-    static byte seq[LEDS_ALL];
-    static uint16_t positions[LEDS_ALL];
+  Color sparkleColor = Color(0xFFFFFF);
 
-    //brigthness animation (BrA) current initial phase
-    byte braPhase;
-    //braPhase change speed
-    byte braPhaseSpd = 5;
-    //BrA frequency (spatial)
-    byte braFreq = 150;
+  static byte seq[LEDS_ALL];
+  static uint16_t positions[LEDS_ALL];
 
-    //glow animation setup
-    void glowSetUp();
+  // brigthness animation (BrA) current initial phase
+  byte braPhase;
+  // braPhase change speed
+  byte braPhaseSpd = 5;
+  // BrA frequency (spatial)
+  byte braFreq = 150;
 
-    //glow animation - must be called for each LED after it's BASIC color is set
-    //note this overwrites the LED color, so the glow assumes that color will be stored elsewhere (not in leds[])
-    //or computed each time regardless previous leds[] value
-    void glowForEachLed(int i);
+  // glow animation setup
+  void glowSetUp();
 
-    //glow animation - must be called at the end of each animaton run
-    void glowRun();
+  // glow animation - must be called for each LED after it's BASIC color is set
+  // note this overwrites the LED color, so the glow assumes that color will be stored elsewhere (not in leds[])
+  // or computed each time regardless previous leds[] value
+  void glowForEachLed(int i);
 
-    void setUp();
+  // glow animation - must be called at the end of each animaton run
+  void glowRun();
 
-    //run and setup handlers
-    void (Anim::*runImpl)();
-    void (Anim::*setUpImpl)();
+  void setUp();
 
+  // run and setup handlers
+  void (Anim::*runImpl)();
+  void (Anim::*setUpImpl)();
 
-    //animation implementations
-    void animStart_SetUp();
-    void animStart_Run();
+  // animation implementations
+  void animStart_SetUp();
+  void animStart_Run();
 
-    void animRun_SetUp();
-    void animRun_Run();
+  void animRun_SetUp();
+  void animRun_Run();
 
-    void animPixieDust_SetUp();
-    void animPixieDust_Run();
+  void animPixieDust_SetUp();
+  void animPixieDust_Run();
 
-    void animPixieDustGrad_SetUp();
-    void animPixieDustGrad_Run();
+  void animPixieDustGrad_SetUp();
+  void animPixieDustGrad_Run();
 
-    void animSparkr_SetUp();
-    void animSparkr_Run();
+  void animSparkr_SetUp();
+  void animSparkr_Run();
 
-    void animSparkrGrad_SetUp();
-    void animSparkrGrad_Run();
+  void animSparkrGrad_SetUp();
+  void animSparkrGrad_Run();
 
-    void animRandCyc_SetUp();
-    void animRandCyc_Run();
+  void animRandCyc_SetUp();
+  void animRandCyc_Run();
 
-    void animRandCycGlow_SetUp();
-    void animRandCycGlow_Run();
+  void animRandCycGlow_SetUp();
+  void animRandCycGlow_Run();
 
-    void animStars_SetUp();
-    void animStars_Run();
+  void animStars_SetUp();
+  void animStars_Run();
 
-    void animSpread_SetUp();
-    void animSpread_Run();
+  void animSpread_SetUp();
+  void animSpread_Run();
 
-    void animFly_SetUp();
-    void animFly_Run();
+  void animFly_SetUp();
+  void animFly_Run();
 
-    void animAurora_SetUp();
-    void animAurora_Run();
+  void animAurora_SetUp();
+  void animAurora_Run();
 
-    void animWarmHug_SetUp();
-    void animWarmHug_Run();
+  void animWarmHug_SetUp();
+  void animWarmHug_Run();
 
-    void animFallingSnow_SetUp();
-    void animFallingSnow_Run();
+  void animFallingSnow_SetUp();
+  void animFallingSnow_Run();
 
-    void animHeartbeat_SetUp();
-    void animHeartbeat_Run();
+  void animHeartbeat_SetUp();
+  void animHeartbeat_Run();
 
-    void animOff_SetUp();
-    void animOff_Run();
+  void animOff_SetUp();
+  void animOff_Run();
 
-    void animFill_SetUp();
-    void animFill_Run();
+  void animFill_SetUp();
+  void animFill_Run();
 
-    void animVideo_SetUp();
-    void animVideo_Run();
+  void animVideo_SetUp();
+  void animVideo_Run();
 
-    void animCalibrate_SetUp();
-    void animCalibrate_Run();
+  void animCalibrate_SetUp();
+  void animCalibrate_Run();
 
-    Color GetGradientColor(int pos, uint8_t colorOffset, int paletteCut);
+  Color GetGradientColor(int pos, uint8_t colorOffset, int paletteCut);
 
-  public:
-    Anim();
-    void setPeriod(byte period);
-    void setPalette(Palette * pal);
-    void setPaletteById(int id);
-    void setAnim(byte animInd);
-    bool run();//returns true if actual change has completed, or false if it's dummy call (previous call was too recent in time)
-    void doSetUp();
+public:
+  Anim();
+  void setPeriod(byte period);
+  void setPalette(Palette *pal);
+  void setPaletteById(int id);
+  void setAnim(byte animInd);
+  bool run(); // returns true if actual change has completed, or false if it's dummy call (previous call was too recent in time)
+  void doSetUp();
 
-    Color getMatrix(int i, int j);
+  Color getMatrix(int i, int j);
+  void setMatrix(Color c, int i, int j);
+  void showWallFrame()
+  {
+    int k = WALL_OFFSET;
+    for (int i = 0; i < VIDEO_WIDTH; i++)
+    {
+      if (i % 2 == 0)
+      {
+        for (int j = 5; j < VIDEO_HEIGHT - 1; j++)
+        {
+          leds[k++] = getMatrix(i, j);
+          if(k > LEDS_ALL - 1) break;
+        }
+      }
+      else
+      {
+        for (int j = VIDEO_HEIGHT - 1; j >= 0; j--)
+        {
+          leds[k++] = getMatrix(i, j);
+          if(k > LEDS_ALL - 1) break;
+        }
+      }
+    }
+  }
 };
 
 unsigned int rng();

@@ -21,7 +21,7 @@ namespace VideoBroadcaster
             gr_result.PixelOffsetMode = PixelOffsetMode.HighQuality;
         }
 
-        static Bitmap result_btmp = new(out_display_width, out_display_height + 3);
+        static Bitmap result_btmp = new(out_display_width, out_display_height);
         static Graphics gr_result = Graphics.FromImage(result_btmp);
         static byte[] result_btmp_arr = new byte[out_display_width * out_display_height * 3];
         bool WSconnected;
@@ -31,7 +31,7 @@ namespace VideoBroadcaster
         IPEndPoint ep;
 
         const int out_display_width = 16;
-        const int out_display_height = 25;
+        const int out_display_height = 28;
         const int width = 32 * 10;
         const int height = 28 * 10;
 
@@ -96,7 +96,7 @@ namespace VideoBroadcaster
                 }
                 else
                 {
-                    await Task.Delay(1);
+                    await Task.Yield();
                     await send;
                 }
                 
@@ -109,25 +109,12 @@ namespace VideoBroadcaster
             int k = 0;
             for (int i = 0; i < img.Width; i++)
             {
-                if (i % 2 == 0)
+                for (int j = 0; j < img.Height; j++)
                 {
-                    for (int j = 5; j < img.Height - 1; j++)
-                    {
-                        var c = img.GetPixel(flipHorizontally ? img.Width - 1 - i : i, j);
-                        result[k++] = (byte)(brightness * c.R / maxBrightness);
-                        result[k++] = (byte)(brightness * c.G / maxBrightness);
-                        result[k++] = (byte)(brightness * c.B / maxBrightness);
-                    }
-                }
-                else
-                {
-                    for (int j = img.Height - 1; j >= 0; j--)
-                    {
-                        var c = img.GetPixel(flipHorizontally ? img.Width - 1 - i : i, j);
-                        result[k++] = (byte)(brightness * c.R / maxBrightness);
-                        result[k++] = (byte)(brightness * c.G / maxBrightness);
-                        result[k++] = (byte)(brightness * c.B / maxBrightness);
-                    }
+                    var c = img.GetPixel(flipHorizontally ? img.Width - 1 - i : i, j);
+                    result[k++] = (byte)(brightness * c.R / maxBrightness);
+                    result[k++] = (byte)(brightness * c.G / maxBrightness);
+                    result[k++] = (byte)(brightness * c.B / maxBrightness);
                 }
             }
 

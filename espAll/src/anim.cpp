@@ -13,8 +13,8 @@ Color *leds;
 CRGB leds_FastLed[LEDS_ALL];
 
 //video
-uint8_t wallBytes[WALL * 3];
-Color (*matrix)[WALL_WIDTH][WALL_HEIGHT] = (Color (*)[WALL_WIDTH][WALL_HEIGHT]) wallBytes;
+uint8_t wallBytes[VIDEO_WIDTH * VIDEO_HEIGHT * sizeof(Color)];
+Color (*matrix)[VIDEO_WIDTH][VIDEO_HEIGHT] = (Color (*)[VIDEO_WIDTH][VIDEO_HEIGHT]) wallBytes;
 bool wallBytesReady = false;
 bool runWallVideo = false;
 
@@ -239,6 +239,10 @@ Color Anim::getMatrix(int i, int j)
   return (*matrix)[i][j];
 }
 
+void Anim::setMatrix(Color c, int i, int j)
+{
+  (*matrix)[i][j] = c;
+}
 
 unsigned int rng() {
   static unsigned int y = 0;
