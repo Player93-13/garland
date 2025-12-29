@@ -1,4 +1,5 @@
 #include "anim.h"
+#include "config.h"
 // количество колец гирлянды на елке
 #define GARL_N 11
 
@@ -33,61 +34,40 @@ static uint16_t GarlandRounds[GARL_N] = {22, 20, 18, 17, 15, 13, 10, 8, 6, 5, 4}
 static Point Garland[GARL];
 static Point Star[STAR] =
     {
-        Point(2, 2),
-        Point(1, 3),
         Point(1, 2),
-        Point(1, 1),
-        Point(2, 1),
         Point(2, 3),
-        Point(0, 4),
-        Point(0, 1),
-        Point(1, 0),
+        Point(2, 2),
+        Point(2, 1),
+        Point(1, 1),
+        Point(1, 3),
+        Point(3, 4),
         Point(3, 1),
-        Point(3, 4)};
+        Point(2, 0),
+        Point(0, 1),
+        Point(0, 4)};
 
-// расчет транспонирования края занавеса на елку
-void TreeCalculate()
+extern TreeRound rounds[];
+extern uint8_t rounds_count;
+
+void TreeCalibrate()
 {
-  // координаты начал колец на елке
-  uint16_t roundStarts[GARL_N];
-
-  ////координаты диодов на кольцах ближайших к занавесу
-  // int roundWalls[GARL_N];
-
-  // расcчитываем размеры колец на елке
-  float Xa = (GARL_N - 1.0) / 2;
-  float Xb = GARL_N - 1;
-  float Ya = (float)GARL / GARL_N;
-  float Yb = GARL_KN;
-  float A = (Yb - Ya) / (Xb - Xa); // коэффициенты уравнения размера колец (y = Ax + B)
-  float B = Ya - Xa * A;           // коэффициенты уравнения размера колец (y = Ax + B)
-
-  roundStarts[0] = 0;
-  uint16_t sum = 0;
-  for (uint16_t i = GARL_N - 1; i > 0; i--)
+  int offset = 0;
+  uint16_t k = (VIDEO_WIDTH / GARL_WALL_K) - 1;
+  for (uint8_t i = 0; i < rounds_count; i++)
   {
-    sum += round(i * A + B);
-    roundStarts[i] = GARL - sum;
-  }
-
-  ////этот код надо будет заменить на ручную калибровку
-  // for (uint16_t i = 0; i < GARL_N; i++)
-  //{
-  //     roundWalls[i] = (roundStarts[i] + (i == GARL_N - 1 ? GARL - 1 : roundStarts[i + 1])) / 2;
-  // }
-
-  // коэффициент для косинуса распределения
-  float z = ((float)WALL_WIDTH / GARL_WALL_K - 1) / 2;
-  for (uint16_t i = 0; i < GARL_N; i++)
-  {
-    uint16_t roundNextStart = i == GARL_N - 1 ? GARL : roundStarts[i + 1];
-    uint16_t roundwidth = roundNextStart - roundStarts[i];
-
-    for (uint16_t j = 0; j < roundwidth; j++)
+    uint16_t width = rounds[i].r_width;
+    uint16_t azimuth = rounds[i].r_azimuth;
+    uint16_t ypos = rounds[i].r_ypos;
+    for (uint16_t j = 0; j < width; j++)
     {
-      uint16_t x = round(z - z * cos(j * 2.0 * PI / roundwidth));
-      Garland[roundStarts[i] + j] = Point(x, GarlandRounds[i]);
+      if(offset + j >= GARL) break;
+
+      float angle = (azimuth - j) * 2.0 * PI / width + PI;
+      uint16_t x = round(((1.0 - cos(angle)) / 2.0) * k);
+      Garland[offset + j] = Point(x, ypos);
     }
+
+    offset += width;
   }
 }
 
@@ -95,8 +75,9 @@ void Anim::animVideo_SetUp()
 {
   // затемняем
   memset(leds, 0, sizeof(Color) * LEDS_ALL);
-
-  // TreeCalculate();
+  memset(Garland, 0, sizeof(Point) * GARL);
+  LoadCalibration();
+  TreeCalibrate();
 }
 
 void Anim::animVideo_Run()
@@ -104,17 +85,17 @@ void Anim::animVideo_Run()
   // занавес
   showWallFrame();
 
-  // //елка
-  // for (uint16_t i = 0; i < GARL; i++)
-  // {
-  //   Point p = Garland[i];
-  //   leds[i] = getMatrix(p.X, p.Y);
-  // }
+  //елка
+  for (uint16_t i = 0; i < GARL; i++)
+  {
+    Point p = Garland[i];
+    leds[i] = getMatrix(p.X, p.Y);
+  }
 
-  // //звезда
-  // for (uint16_t i = 0; i < STAR; i++)
-  // {
-  //   Point p = Star[i];
-  //   leds[i + GARL] = getMatrix(p.X, p.Y);
-  // }
+  //звезда
+  for (uint16_t i = 0; i < STAR; i++)
+  {
+    Point p = Star[i];
+    leds[i + GARL] = getMatrix(p.X, p.Y);
+  }
 }

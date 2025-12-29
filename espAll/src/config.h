@@ -24,3 +24,5 @@ void LoadConfig();
 void SaveConfig();
 
 void SaveCalibration(uint8_t *data, size_t len);
+
+void LoadCalibration();

@@ -64,3 +64,18 @@ void SaveCalibration(uint8_t *data, size_t len)
   _f.write(data, len);
   _f.close();
 }
+
+void LoadCalibration()
+{
+  File _f = LittleFS.open(CalibrationFileName, FILE_READ);
+  JsonDocument _doc;
+  DeserializationError _error = deserializeJson(_doc, _f);
+
+  rounds_count = _doc.size();
+  for (int i = 0; i < _doc.size(); i++)
+  {
+    rounds[i].r_width = _doc[i]["r_width"];
+    rounds[i].r_azimuth = _doc[i]["r_azimuth"];
+    rounds[i].r_ypos = _doc[i]["r_ypos"];
+  }
+}
